@@ -33,12 +33,20 @@ function initializePage() {
 // 신한SOL 클릭 처리
 function handleShinhanClick() {
     const params = getURLParams();
-    alert(`신한SOL 앱으로 이동합니다.\n송금 금액: ₩${formatAmount(params.amount)}\n요청자: ${params.sender}`);
     
-    // 실제로는 신한SOL 앱의 딥링크나 웹뱅킹으로 이동
-    // window.location.href = 'shinhan://transfer?amount=' + params.amount + '&from=' + params.sender;
+    // iOS 앱으로 딥링크 호출
+    const deepLink = `solsettle://transfer?amount=${params.amount}&sender=${encodeURIComponent(params.sender)}`;
     
-    console.log('신한SOL 클릭됨:', params);
+    console.log('딥링크 호출:', deepLink);
+    
+    // iOS 앱이 설치되어 있으면 딥링크로, 없으면 앱스토어로
+    window.location.href = deepLink;
+    
+    // 앱이 없을 경우를 대비한 폴백 (3초 후)
+    setTimeout(() => {
+        // 여기에 앱스토어 링크를 넣을 수 있음
+        console.log('앱이 설치되지 않은 것 같습니다.');
+    }, 3000);
 }
 
 // 페이지 로드시 초기화
