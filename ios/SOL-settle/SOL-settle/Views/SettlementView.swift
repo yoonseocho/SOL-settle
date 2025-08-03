@@ -293,7 +293,7 @@ struct SettlementView: View {
         👥 총 \(participantCount)명이 참여합니다
         💰 총 금액: \(displayAmount)원
         🧾 개인 부담: \(amountPerPerson.formatted())원
-        🔗 solsettle://payment?amount=\(amountPerPerson)&sender=\(senderName)
+        🔗 https://sol-settle.vercel.app/?amount=\(amountPerPerson)&sender=\(senderName)
         """
     }
     
