@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정산 요청 - SOL정산</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="profile-section">
+            <div class="profile-icon">😊</div>
+            <div class="sender-name" id="sender-name">윤서</div>
+            <div class="payment-request">송금에 사용할 내 뱅킹앱을 선택하세요.</div>
+            <div class="amount" id="amount">₩0</div>
+            <div class="arrow">⌄</div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active">개인용</div>
+        </div>
+
+        <div class="banks-section" id="banks-list">
+            <div class="bank-item disabled">
+                <div class="bank-logo logo-naver">NAVER<br>PAY</div>
+                <div class="bank-info">
+                    <div class="bank-name">네이버페이</div>
+                    <div class="bank-description">네이버파이낸셜</div>
+                </div>
+                <div class="bank-status unavailable">준비중</div>
+            </div>
+
+            <div class="bank-item disabled">
+                <div class="bank-logo logo-kakao">kakao<br>bank</div>
+                <div class="bank-info">
+                    <div class="bank-name">카카오뱅크</div>
+                    <div class="bank-description">카카오뱅크</div>
+                </div>
+                <div class="bank-status unavailable">준비중</div>
+            </div>
+
+            <div class="bank-item disabled">
+                <div class="bank-logo logo-toss">toss</div>
+                <div class="bank-info">
+                    <div class="bank-name">토스</div>
+                    <div class="bank-description">토스뱅크</div>
+                </div>
+                <div class="bank-status unavailable">준비중</div>
+            </div>
+
+            <div class="bank-item" id="shinhan-bank" onclick="handleShinhanClick()">
+                <div class="bank-logo logo-shinhan">SOL</div>
+                <div class="bank-info">
+                    <div class="bank-name">신한SOL</div>
+                    <div class="bank-description">신한은행</div>
+                </div>
+                <div class="bank-status available">이용가능</div>
+            </div>
+
+            <div class="bank-item disabled">
+                <div class="bank-logo logo-woori">WOORI<br>WON</div>
+                <div class="bank-info">
+                    <div class="bank-name">우리WON뱅킹</div>
+                    <div class="bank-description">우리은행</div>
+                </div>
+                <div class="bank-status unavailable">준비중</div>
+            </div>
+
+            <div class="bank-item disabled">
+                <div class="bank-logo logo-kb">KB<br>Star</div>
+                <div class="bank-info">
+                    <div class="bank-name">KB스타뱅킹</div>
+                    <div class="bank-description">국민은행</div>
+                </div>
+                <div class="bank-status unavailable">준비중</div>
+            </div>
+
+            <div class="bank-item disabled">
+                <div class="bank-logo logo-hana">하나<br>원큐</div>
+                <div class="bank-info">
+                    <div class="bank-name">하나원큐</div>
+                    <div class="bank-description">하나은행</div>
+                </div>
+                <div class="bank-status unavailable">준비중</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

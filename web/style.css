@@ -1,0 +1,209 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 414px;
+    margin: 0 auto;
+    background-color: white;
+    min-height: 100vh;
+    position: relative;
+}
+
+.profile-section {
+    background-color: #f0f0f0;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.profile-icon {
+    width: 60px;
+    height: 60px;
+    background-color: #ddd;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.sender-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.payment-request {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.amount {
+    font-size: 28px;
+    font-weight: bold;
+    color: #0066cc;
+    margin: 20px 0 10px 0;  /* 하단 여백 줄임 */
+}
+
+.arrow {
+    font-size: 20px;
+    color: #999;
+    margin: 10px 0;  /* 상하 여백 줄임 */
+}
+
+.tabs {
+    display: flex;
+    background-color: white;
+    border-bottom: 1px solid #eee;
+    justify-content: flex-start;  /* 좌측 정렬 */
+    padding-left: 20px;  /* 좌측 여백 */
+}
+
+.tab {
+    padding: 15px 20px;
+    text-align: center;
+    color: #0066cc;
+    border-bottom: 2px solid #0066cc;
+    font-weight: 600;
+}
+
+.banks-section {
+    padding: 0 20px 100px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.bank-item {
+    display: flex;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.bank-item:hover {
+    background-color: #f9f9f9;
+}
+
+.bank-item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.bank-item.disabled:hover {
+    background-color: transparent;
+}
+
+.bank-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 14px;  /* 폰트 크기 증가 */
+}
+
+.bank-info {
+    flex: 1;
+}
+
+.bank-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.bank-description {
+    font-size: 14px;
+    color: #666;
+}
+
+.bank-status {
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.available {
+    background-color: #e8f5e8;
+    color: #2d5a2d;
+}
+
+.unavailable {
+    background-color: #f5f5f5;
+    color: #999;
+}
+
+.footer-url {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f8f8f8;
+    padding: 10px 20px;
+    border-radius: 20px 20px 0 0;
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    align-items: center;
+}
+
+.lock-icon {
+    margin-right: 8px;
+}
+
+/* 뱅크 로고 색상들 - 실제 은행 브랜드 컬러 */
+.logo-naver { 
+    background-color: #03c75a;
+    font-size: 10px;
+}
+
+.logo-kakao { 
+    background-color: #fee500; 
+    color: #3c1e1e;
+    font-size: 16px;
+}
+
+.logo-toss { 
+    background-color: #0050ff;
+    font-size: 16px;
+}
+
+.logo-shinhan { 
+    background-color: #0046ff;  /* 신한 브랜드 블루 */
+    font-size: 16px;  /* SOL 글자 크기 증가 */
+    font-weight: 900;
+}
+
+.logo-kb { 
+    background-color: #ffcc00; 
+    color: #1e1e1e;
+    font-size: 12px;
+}
+
+.logo-hana { 
+    background-color: #008485;  /* 하나은행 틸 그린 */
+    font-size: 12px;
+}
+
+.logo-woori { 
+    background-color: #0e4a84;  /* 우리은행 네이비 */
+    font-size: 11px;
+}
