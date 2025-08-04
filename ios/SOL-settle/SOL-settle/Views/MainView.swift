@@ -48,7 +48,8 @@ struct MainView: View {
                     .foregroundColor(.black)
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 10)
+                .padding(.top, 50)
+                .padding(.bottom, 15)
                 .background(Color.white)
                 
                 ScrollView {
@@ -209,7 +210,7 @@ struct MainView: View {
                 .shadow(color: .gray.opacity(0.2), radius: 5)
             }
             .background(Color.gray.opacity(0.05))
-            .ignoresSafeArea(.all, edges: .bottom)
+            .ignoresSafeArea(.all, edges: [.top, .bottom])
         }
         .navigationBarHidden(true)
     }
