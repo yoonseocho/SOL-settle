@@ -287,7 +287,7 @@ struct SettlementView: View {
     }
     
     private func generateMessageBody() -> String {
-        let senderName = contactService.myContact?.name ?? "정산대장"
+        let senderName = contactService.myContact?.name ?? "조윤서"
         return """
         👤 \(senderName)님이 정산 요청을 보냈어요
         👥 총 \(participantCount)명이 참여합니다
