@@ -6,6 +6,7 @@ struct TransferView: View {
     
     @State private var currentAmount = ""
     @State private var selectedAccount = "신한 110-987-654321"
+    @State private var showTransferDetail = false
     @Environment(\.dismiss) var dismiss
     @Binding var showTransferView: Bool
     
@@ -88,7 +89,7 @@ struct TransferView: View {
                 VStack(spacing: 0) {
                     // 계좌 선택
                     HStack {
-                        Text("신한 110-214-203626")
+                        Text("신한 110-987-654321")
                             .font(.subheadline)
                             .foregroundColor(.gray)
                         
@@ -158,7 +159,7 @@ struct TransferView: View {
                     .background(Color.white)
                     
                     // 키패드
-                    NumberPadView(currentAmount: $currentAmount)
+                    NumberPadView(currentAmount: $currentAmount, showTransferDetail: $showTransferDetail)
                 }
             }
         }
@@ -166,6 +167,13 @@ struct TransferView: View {
         .onAppear {
             currentAmount = amount
             print("💰 송금 화면 로드: \(amount)원, 발송자: \(sender)")
+        }
+        .fullScreenCover(isPresented: $showTransferDetail) {
+            TransferDetailView(
+                amount: currentAmount,
+                sender: sender,
+                recipient: "조윤서"  // 실제로는 받는 사람 정보를 전달받아야 함
+            )
         }
     }
     
@@ -219,6 +227,7 @@ struct TransferView: View {
 // 숫자 키패드
 struct NumberPadView: View {
     @Binding var currentAmount: String
+    @Binding var showTransferDetail: Bool
     
     let numbers = [
         ["1", "2", "3"],
@@ -260,8 +269,9 @@ struct NumberPadView: View {
     private func handleKeyPad(_ key: String) {
         switch key {
         case "완료":
-            // 송금 완료 처리
-            print("✅ 송금 완료: \(currentAmount)원")
+            if !currentAmount.isEmpty {
+                showTransferDetail = true
+            }
         case "←":
             // 백스페이스 처리
             if !currentAmount.isEmpty {

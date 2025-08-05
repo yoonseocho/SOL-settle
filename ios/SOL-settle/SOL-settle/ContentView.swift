@@ -22,12 +22,17 @@ struct ContentView: View {
                 self.showTransferView = true
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .dismissAllTransferViews)) { _ in
+            // 송금 완료 후 메인 화면으로 돌아가기
+            self.showTransferView = false
+        }
     }
 }
 
 // Notification 확장
 extension Notification.Name {
     static let showTransferView = Notification.Name("showTransferView")
+    static let dismissAllTransferViews = Notification.Name("dismissAllTransferViews")
 }
 
 #Preview {
