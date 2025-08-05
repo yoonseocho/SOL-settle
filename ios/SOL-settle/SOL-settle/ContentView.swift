@@ -1,9 +1,35 @@
 import SwiftUI
+import UserNotifications
+
+class NotificationDelegate: NSObject, ObservableObject, UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        
+        let userInfo = response.notification.request.content.userInfo
+        
+        if let type = userInfo["type"] as? String, type == "sol_settlement" {
+            if let amount = userInfo["amount"] as? Int,
+               let sender = userInfo["sender"] as? String {
+                
+                NotificationCenter.default.post(
+                    name: .showTransferView,
+                    object: nil,
+                    userInfo: [
+                        "amount": String(amount),
+                        "sender": sender
+                    ]
+                )
+            }
+        }
+        
+        completionHandler()
+    }
+}
 
 struct ContentView: View {
     @State private var showTransferView = false
     @State private var transferAmount = ""
     @State private var senderName = ""
+    @StateObject private var notificationDelegate = NotificationDelegate()
     
     var body: some View {
         NavigationView {
@@ -25,6 +51,9 @@ struct ContentView: View {
         .onReceive(NotificationCenter.default.publisher(for: .dismissAllTransferViews)) { _ in
             // 송금 완료 후 메인 화면으로 돌아가기
             self.showTransferView = false
+        }
+        .onAppear {
+            UNUserNotificationCenter.current().delegate = notificationDelegate
         }
     }
 }

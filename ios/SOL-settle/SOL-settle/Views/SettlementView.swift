@@ -1,10 +1,103 @@
 import SwiftUI
 import MessageUI
+import UserNotifications
+
+struct SettlementData {
+    let totalAmount: Int
+    let amountPerPerson: Int
+    let senderName: String
+    let participants: [Contact]
+    let settlementId: String = UUID().uuidString
+}
+
+// MARK: - SOL 사용자 확인 서비스 (테스트용)
+class SOLUserCheckService: ObservableObject {
+    
+    // 테스트용: 특정 번호들을 SOL 사용자로 설정
+    private let solUsers = [
+        "010-6319-6321"
+    ]
+    
+    func checkSOLUsers(phoneNumbers: [String]) -> [String: Bool] {
+        var result: [String: Bool] = [:]
+        
+        for phoneNumber in phoneNumbers {
+            // 실제로는 서버 API 호출, 지금은 테스트용 하드코딩
+            result[phoneNumber] = solUsers.contains(phoneNumber)
+        }
+        
+        print("🔍 SOL 사용자 확인 결과:")
+        for (phone, isSOL) in result {
+            print("  \(phone): \(isSOL ? "SOL 사용자 ✅" : "일반 사용자 📱")")
+        }
+        
+        return result
+    }
+    
+    func sendSOLPushNotification(to phoneNumbers: [String], settlementData: SettlementData) {
+        for phoneNumber in phoneNumbers {
+            createLocalPushNotification(phoneNumber: phoneNumber, data: settlementData)
+        }
+        print("🔔 SOL 푸시 알림 \(phoneNumbers.count)명에게 전송 완료")
+    }
+    
+    private func createLocalPushNotification(phoneNumber: String, data: SettlementData) {
+        // 로컬 푸시 알림 생성 (실제로는 서버에서 해당 사용자에게 푸시)
+        let content = UNMutableNotificationContent()
+        content.title = "💰 SOL 정산 요청"
+        content.body = "\(data.senderName)님이 \(data.amountPerPerson.formatted())원 정산을 요청했습니다"
+        content.sound = .default
+        
+        content.userInfo = [
+            "type": "sol_settlement",
+            "amount": data.amountPerPerson,
+            "sender": data.senderName,
+            "phoneNumber": phoneNumber
+        ]
+        
+        // 액션 버튼 추가
+        let payAction = UNNotificationAction(
+            identifier: "sol_pay_now",
+            title: "SOL에서 송금하기",
+            options: [.foreground]
+        )
+        
+        let laterAction = UNNotificationAction(
+            identifier: "sol_later",
+            title: "나중에",
+            options: []
+        )
+        
+        let category = UNNotificationCategory(
+            identifier: "sol_settlement",
+            actions: [payAction, laterAction],
+            intentIdentifiers: []
+        )
+        
+        UNUserNotificationCenter.current().setNotificationCategories([category])
+        content.categoryIdentifier = "sol_settlement"
+        
+        let request = UNNotificationRequest(
+            identifier: UUID().uuidString,
+            content: content,
+            trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        )
+        
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("❌ 푸시 알림 생성 실패: \(error)")
+            } else {
+                print("✅ \(phoneNumber)에게 SOL 푸시 알림 생성 성공")
+            }
+        }
+    }
+}
 
 struct SettlementView: View {
     @Environment(\.dismiss) var dismiss
     @State private var selectedContacts: [Contact]
     @StateObject private var contactService = ContactService()
+    @StateObject private var solUserService = SOLUserCheckService()
     
     init(initialContacts: [Contact]) {
         self._selectedContacts = State(initialValue: initialContacts)
@@ -184,10 +277,15 @@ struct SettlementView: View {
                                                     .fontWeight(.medium)
                                             }
                                             
-                                            if contact.phoneNumber != "나" {
-                                                Text(contact.phoneNumber)
-                                                    .font(.caption)
-                                                    .foregroundColor(.gray)
+                                            // SOL 사용자 뱃지 표시 추가!
+                                            if contact.id != "me" && solUserService.checkSOLUsers(phoneNumbers: [contact.phoneNumber])[contact.phoneNumber] == true {
+                                                Text("SOL")
+                                                    .font(.caption2)
+                                                    .foregroundColor(.white)
+                                                    .padding(.horizontal, 6)
+                                                    .padding(.vertical, 2)
+                                                    .background(Color.blue)
+                                                    .cornerRadius(8)
                                             }
                                         }
                                         
@@ -256,7 +354,8 @@ struct SettlementView: View {
                 amountPerPerson: amountPerPerson,
                 onConfirm: {
                     showConfirmationSheet = false
-                    showMessageComposer = true
+                    // 기존 SMS 방식 대신 SOL 사용자 확인 후 분기 처리
+                    sendSmartSettlementRequest()
                 },
                 onCancel: {
                     showConfirmationSheet = false
@@ -266,13 +365,118 @@ struct SettlementView: View {
         }
         .sheet(isPresented: $showMessageComposer) {
             MessageComposeView(
-                recipients: getRecipientPhoneNumbers(),
+                recipients: selectedContacts
+                    .filter { $0.id != "me" }
+                    .filter { contact in
+                        let solCheck = solUserService.checkSOLUsers(phoneNumbers: [contact.phoneNumber])
+                        return solCheck[contact.phoneNumber] != true
+                    }
+                    .map { $0.phoneNumber },
                 messageBody: generateMessageBody(),
                 onResult: { result in
                     showMessageComposer = false
                     handleMessageResult(result)
                 }
             )
+        }
+        .onAppear {
+            requestNotificationPermission()
+        }
+    }
+    
+    private func sendSmartSettlementRequest() {
+        let settlementData = SettlementData(
+            totalAmount: Int(totalAmount) ?? 0,
+            amountPerPerson: amountPerPerson,
+            senderName: contactService.myContact?.name ?? "사용자",
+            participants: selectedContacts
+        )
+        
+        // 나를 제외한 연락처들의 전화번호 추출
+        let phoneNumbers = selectedContacts
+            .filter { $0.id != "me" }
+            .map { $0.phoneNumber }
+        
+        // SOL 사용자 여부 확인
+        let solUserCheck = solUserService.checkSOLUsers(phoneNumbers: phoneNumbers)
+        
+        // SOL 사용자와 일반 사용자 분리
+        var solUsers: [String] = []
+        var regularUsers: [String] = []
+        
+        for (phoneNumber, isSOLUser) in solUserCheck {
+            if isSOLUser {
+                solUsers.append(phoneNumber)
+            } else {
+                regularUsers.append(phoneNumber)
+            }
+        }
+        
+        print("📊 정산 요청 분기 결과:")
+        print("  SOL 사용자: \(solUsers.count)명 - 푸시 알림 전송")
+        print("  일반 사용자: \(regularUsers.count)명 - SMS 전송")
+        
+        // 1. SOL 사용자들에게 푸시 알림 전송
+        if !solUsers.isEmpty {
+            solUserService.sendSOLPushNotification(to: solUsers, settlementData: settlementData)
+        }
+        
+        // 2. 일반 사용자들에게 SMS 전송
+        if !regularUsers.isEmpty {
+            sendSMSToRegularUsers(phoneNumbers: regularUsers, settlementData: settlementData)
+        }
+        
+        // 결과 표시
+        showSettlementResult(solCount: solUsers.count, smsCount: regularUsers.count)
+    }
+    
+    private func sendSMSToRegularUsers(phoneNumbers: [String], settlementData: SettlementData) {
+        let message = generateMessageBody()
+        
+        DispatchQueue.main.async {
+            self.showMessageComposer = true
+        }
+    }
+    
+    private func showSettlementResult(solCount: Int, smsCount: Int) {
+        let senderName = contactService.myContact?.name ?? "조윤서"
+        let message = """
+        ✅ 정산 요청이 완료되었습니다!
+        
+        👤 요청자: \(senderName)
+        💰 개인 부담금: \(amountPerPerson.formatted())원
+        👥 총 \(participantCount)명 참여
+        
+        📱 SOL앱 알림: \(solCount)명
+        💬 문자 발송: \(smsCount)명
+        """
+        
+        print(message)
+        
+        // 로컬 알림으로 결과 표시
+        let content = UNMutableNotificationContent()
+        content.title = "💰 정산 요청"
+        content.body = "\(contactService.myContact?.name ?? "조윤서")님이 \(amountPerPerson.formatted())원 정산을 요청했습니다"
+        content.sound = .default
+        
+        let request = UNNotificationRequest(
+            identifier: "settlement_complete",
+            content: content,
+            trigger: UNTimeIntervalNotificationTrigger(timeInterval: 2, repeats: false)
+        )
+        
+        UNUserNotificationCenter.current().add(request)
+    }
+    
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            DispatchQueue.main.async {
+                if granted {
+                    print("✅ 푸시 알림 권한 허용됨")
+                } else {
+                    print("❌ 푸시 알림 권한 거부됨")
+                }
+            }
         }
     }
     
@@ -281,9 +485,16 @@ struct SettlementView: View {
     }
     
     private func getRecipientPhoneNumbers() -> [String] {
-        return selectedContacts
+        let allPhoneNumbers = selectedContacts
             .filter { $0.id != "me" }
             .map { $0.phoneNumber }
+        
+        // SOL 사용자 확인해서 일반 사용자만 반환
+        let solUserCheck = solUserService.checkSOLUsers(phoneNumbers: allPhoneNumbers)
+        
+        return allPhoneNumbers.filter { phoneNumber in
+            solUserCheck[phoneNumber] != true  // SOL 사용자가 아닌 경우만
+        }
     }
     
     private func generateMessageBody() -> String {
@@ -471,6 +682,7 @@ struct MessageComposeView: UIViewControllerRepresentable {
 #Preview {
     SettlementView(initialContacts: [
         Contact(id: "me", name: "조윤서", phoneNumber: "나"),
-        Contact(id: "1", name: "아빠", phoneNumber: "010-1234-5678")
+        Contact(id: "1", name: "조세현", phoneNumber: "010-6319-6321"), // SOL 사용자
+        Contact(id: "2", name: "임채희", phoneNumber: "010-8652-1471")  // 일반 사용자
     ])
 }
