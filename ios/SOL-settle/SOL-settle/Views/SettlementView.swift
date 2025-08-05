@@ -431,8 +431,6 @@ struct SettlementView: View {
     }
     
     private func sendSMSToRegularUsers(phoneNumbers: [String], settlementData: SettlementData) {
-        let message = generateMessageBody()
-        
         DispatchQueue.main.async {
             self.showMessageComposer = true
         }
@@ -440,7 +438,7 @@ struct SettlementView: View {
     
     private func showSettlementResult(solCount: Int, smsCount: Int) {
         let senderName = contactService.myContact?.name ?? "조윤서"
-        let message = """
+        let resultMessage = """
         ✅ 정산 요청이 완료되었습니다!
         
         👤 요청자: \(senderName)
@@ -451,7 +449,7 @@ struct SettlementView: View {
         💬 문자 발송: \(smsCount)명
         """
         
-        print(message)
+        print(resultMessage)
         
         // 로컬 알림으로 결과 표시
         let content = UNMutableNotificationContent()

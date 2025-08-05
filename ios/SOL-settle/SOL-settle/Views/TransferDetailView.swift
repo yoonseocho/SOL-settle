@@ -244,11 +244,14 @@ struct TransferDetailView: View {
     }
 }
 
-// 송금 완료 화면
+// 송금 완료 화면 - 간단한 카테고리 토글 추가
 struct TransferCompleteView: View {
     let amount: String
     let recipient: String
     let onDismiss: () -> Void
+    
+    @State private var enableCategorySelection = false
+    @State private var selectedCategory: TransactionCategory = .food
     
     var body: some View {
         VStack(spacing: 40) {
@@ -281,8 +284,62 @@ struct TransferCompleteView: View {
             
             Spacer()
             
+            // 카테고리 선택 토글 (선택사항)
+            VStack(spacing: 15) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("🏷️ 카테고리 설정")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        Text("가계부 관리에 도움됩니다")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                    
+                    Spacer()
+                    
+                    Toggle("", isOn: $enableCategorySelection)
+                        .toggleStyle(SwitchToggleStyle(tint: .blue))
+                }
+                .padding(.horizontal, 20)
+                
+                // 토글이 켜져있을 때만 카테고리 선택 표시
+                if enableCategorySelection {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(TransactionCategory.simpleCases, id: \.self) { category in
+                                Button(action: {
+                                    selectedCategory = category
+                                }) {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: category.icon)
+                                            .font(.caption)
+                                        Text(category.displayName)
+                                            .font(.caption)
+                                            .fontWeight(.medium)
+                                    }
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 8)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 15)
+                                            .fill(selectedCategory == category ? category.color : Color.gray.opacity(0.15))
+                                    )
+                                    .foregroundColor(selectedCategory == category ? .white : .gray)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                    }
+                    .animation(.easeInOut(duration: 0.3), value: enableCategorySelection)
+                }
+            }
+            
             // 확인 버튼
             Button("확인") {
+                if enableCategorySelection {
+                    saveTransactionCategory()
+                }
                 onDismiss()
             }
             .font(.headline)
@@ -298,12 +355,74 @@ struct TransferCompleteView: View {
         .background(Color.white)
     }
     
+    // 함수들은 그대로 유지
     private func formatAmountWithCommas(_ numberString: String) -> String {
         guard let number = Int(numberString), number > 0 else { return "0" }
         
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         return formatter.string(from: NSNumber(value: number)) ?? numberString
+    }
+    
+    private func saveTransactionCategory() {
+        let finalCategory = selectedCategory.displayName
+        
+        print("💾 거래 카테고리 저장:")
+        print("  금액: \(amount)원")
+        print("  받는이: \(recipient)")
+        print("  카테고리: \(finalCategory)")
+        print("  시간: \(Date())")
+        
+        var transactions = UserDefaults.standard.array(forKey: "SavedTransactions") as? [[String: Any]] ?? []
+        
+        let transaction: [String: Any] = [
+            "id": UUID().uuidString,
+            "amount": amount,
+            "recipient": recipient,
+            "category": finalCategory,
+            "date": Date(),
+            "type": "transfer"
+        ]
+        
+        transactions.append(transaction)
+        UserDefaults.standard.set(transactions, forKey: "SavedTransactions")
+    }
+}
+
+enum TransactionCategory: String, CaseIterable {
+    case food = "식비"
+    case gift = "선물"
+    case transport = "교통비"
+    case travel = "여행"  // "여행/숙박" → "여행"으로 변경
+    case etc = "기타"     // 이 라인 추가
+    
+    var displayName: String {
+        return self.rawValue
+    }
+    
+    var icon: String {
+        switch self {
+        case .food: return "fork.knife"
+        case .gift: return "gift"
+        case .transport: return "car"
+        case .travel: return "airplane"
+        case .etc: return "ellipsis.circle"  // 이 케이스 추가
+        }
+    }
+    
+    var color: Color {
+        switch self {
+        case .food: return .orange
+        case .gift: return .pink
+        case .transport: return .blue
+        case .travel: return .green
+        case .etc: return .gray  // 이 케이스 추가
+        }
+    }
+    
+    // simpleCases 수정
+    static var simpleCases: [TransactionCategory] {
+        return [.food, .gift, .transport, .travel, .etc]  // .culture 제거, .etc 추가
     }
 }
 
