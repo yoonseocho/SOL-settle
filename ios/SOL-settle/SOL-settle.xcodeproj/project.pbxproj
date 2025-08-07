@@ -17,6 +17,8 @@
 		3C209FD42E3F622100CAD2FE /* ContactService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C209FD32E3F622000CAD2FE /* ContactService.swift */; };
 		3C209FD62E3F854100CAD2FE /* SettlementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C209FD52E3F854100CAD2FE /* SettlementView.swift */; };
 		3C209FD82E3F90E200CAD2FE /* MessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C209FD72E3F90E200CAD2FE /* MessageService.swift */; };
+		3C209FDA2E3FB9CF00CAD2FE /* TransferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C209FD92E3FB9CF00CAD2FE /* TransferView.swift */; };
+		3CD483DB2E42330C003D547A /* TransferDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CD483DA2E42330C003D547A /* TransferDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +33,9 @@
 		3C209FD32E3F622000CAD2FE /* ContactService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactService.swift; sourceTree = "<group>"; };
 		3C209FD52E3F854100CAD2FE /* SettlementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettlementView.swift; sourceTree = "<group>"; };
 		3C209FD72E3F90E200CAD2FE /* MessageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageService.swift; sourceTree = "<group>"; };
+		3C209FD92E3FB9CF00CAD2FE /* TransferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferView.swift; sourceTree = "<group>"; };
+		3C209FDB2E3FBACA00CAD2FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		3CD483DA2E42330C003D547A /* TransferDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +68,7 @@
 		3C209FB92E3F572F00CAD2FE /* SOL-settle */ = {
 			isa = PBXGroup;
 			children = (
+				3C209FDB2E3FBACA00CAD2FE /* Info.plist */,
 				3C209FCC2E3F59CA00CAD2FE /* Services */,
 				3C209FCB2E3F59BE00CAD2FE /* Views */,
 				3C209FC82E3F599E00CAD2FE /* Models */,
@@ -96,6 +102,8 @@
 				3C209FCD2E3F5A0A00CAD2FE /* MainView.swift */,
 				3C209FCF2E3F5E5400CAD2FE /* ContactSelectionView.swift */,
 				3C209FD52E3F854100CAD2FE /* SettlementView.swift */,
+				3C209FD92E3FB9CF00CAD2FE /* TransferView.swift */,
+				3CD483DA2E42330C003D547A /* TransferDetailView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -180,6 +188,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3C209FBD2E3F572F00CAD2FE /* ContentView.swift in Sources */,
+				3C209FDA2E3FB9CF00CAD2FE /* TransferView.swift in Sources */,
+				3CD483DB2E42330C003D547A /* TransferDetailView.swift in Sources */,
 				3C209FCE2E3F5A0A00CAD2FE /* MainView.swift in Sources */,
 				3C209FD62E3F854100CAD2FE /* SettlementView.swift in Sources */,
 				3C209FD42E3F622100CAD2FE /* ContactService.swift in Sources */,
@@ -323,6 +333,7 @@
 				DEVELOPMENT_TEAM = P6AZP48W4T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "SOL-settle/Info.plist";
 				INFOPLIST_KEY_NSContactsUsageDescription = "정산 기능을 위해 연락처 접근이 필요합니다";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -354,6 +365,7 @@
 				DEVELOPMENT_TEAM = P6AZP48W4T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "SOL-settle/Info.plist";
 				INFOPLIST_KEY_NSContactsUsageDescription = "정산 기능을 위해 연락처 접근이 필요합니다";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

@@ -207,3 +207,129 @@ body {
     background-color: #0e4a84;  /* 우리은행 네이비 */
     font-size: 11px;
 }
+
+.logo-nh { 
+    background-color: #048a00;
+    font-size: 11px;
+}
+
+/* 은행 화면 오버레이 공통 스타일 */
+.bank-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+}
+
+.bank-content {
+    max-width: 350px;
+    width: 90%;
+    padding: 40px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    position: relative;
+}
+
+.close-demo {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+}
+
+.bank-logo-large {
+    font-size: 48px;
+    font-weight: 900;
+    margin-bottom: 20px;
+}
+
+.transfer-info {
+    margin: 20px 0;
+    padding: 20px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+}
+
+.transfer-button {
+    background: white;
+    color: #333;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+/* 각 은행별 배경 */
+.toss-overlay {
+    background: linear-gradient(135deg, #0050ff, #00d4ff);
+}
+
+.kakao-overlay {
+    background: linear-gradient(135deg, #fee500, #ffeb3b);
+    color: #333;
+}
+
+.kakao-overlay .bank-content {
+    color: #333;
+}
+
+.kakao-overlay .close-demo {
+    color: #333;
+    background: rgba(0,0,0,0.1);
+}
+
+.kb-overlay {
+    background: linear-gradient(135deg, #ffcc00, #ffd54f);
+    color: #333;
+}
+
+.kb-overlay .bank-content {
+    color: #333;
+}
+
+.kb-overlay .close-demo {
+    color: #333;
+    background: rgba(0,0,0,0.1);
+}
+
+.hana-overlay {
+    background: linear-gradient(135deg, #008485, #26a69a);
+}
+
+.woori-overlay {
+    background: linear-gradient(135deg, #0e4a84, #1976d2);
+}
+
+.nh-overlay {
+    background: linear-gradient(135deg, #048a00, #388e3c);
+}
+
+.bounce {
+    animation: bounceIn 0.8s ease;
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+}

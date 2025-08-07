@@ -22,6 +22,15 @@ function initializePage() {
     // 금액 설정 (포맷팅)
     const formattedAmount = formatAmount(params.amount);
     document.getElementById('amount').textContent = `₩${formattedAmount}`;
+
+    // 모든 은행 화면에 정보 설정
+    const banks = ['toss', 'kakao', 'kb', 'hana', 'woori', 'nh'];
+    banks.forEach(bank => {
+        const amountElement = document.getElementById(`${bank}-amount`);
+        const senderElement = document.getElementById(`${bank}-sender`);
+        if (amountElement) amountElement.textContent = `₩${formattedAmount}`;
+        if (senderElement) senderElement.textContent = params.sender;
+    });
     
     console.log('정산 요청 정보:', { 
         amount: params.amount, 
@@ -47,6 +56,32 @@ function handleShinhanClick() {
         // 여기에 앱스토어 링크를 넣을 수 있음
         console.log('앱이 설치되지 않은 것 같습니다.');
     }, 3000);
+}
+
+// 은행 화면 표시
+function showBankScreen(bankName) {
+    const screen = document.getElementById(`${bankName}-screen`);
+    if (screen) {
+        screen.style.display = 'flex';
+    }
+}
+
+// 은행 화면 닫기
+function closeBankScreen(screenId) {
+    const screen = document.getElementById(screenId);
+    if (screen) {
+        screen.style.display = 'none';
+    }
+}
+
+// 송금 완료 처리
+function completeBankTransfer(bankName) {
+    const params = getURLParams();
+    alert(`${bankName}에서 송금이 완료되었습니다!\n\n금액: ${formatAmount(params.amount)}원\n받는 사람: ${params.sender}님`);
+    
+    // 화면 닫기
+    const overlays = document.querySelectorAll('.bank-overlay');
+    overlays.forEach(overlay => overlay.style.display = 'none');
 }
 
 // 페이지 로드시 초기화

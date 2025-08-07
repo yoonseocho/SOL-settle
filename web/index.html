@@ -20,35 +20,19 @@
             <div class="tab active">개인용</div>
         </div>
 
-        <div class="banks-section" id="banks-list">
-            <div class="bank-item disabled">
-                <div class="bank-logo logo-naver">NAVER<br>PAY</div>
-                <div class="bank-info">
-                    <div class="bank-name">네이버페이</div>
-                    <div class="bank-description">네이버파이낸셜</div>
-                </div>
-                <div class="bank-status unavailable">준비중</div>
-            </div>
-
-            <div class="bank-item disabled">
-                <div class="bank-logo logo-kakao">kakao<br>bank</div>
-                <div class="bank-info">
-                    <div class="bank-name">카카오뱅크</div>
-                    <div class="bank-description">카카오뱅크</div>
-                </div>
-                <div class="bank-status unavailable">준비중</div>
-            </div>
-
-            <div class="bank-item disabled">
+        <div class="banks-section">
+            <!-- 토스 -->
+            <div class="bank-item" onclick="showBankScreen('toss')">
                 <div class="bank-logo logo-toss">toss</div>
                 <div class="bank-info">
                     <div class="bank-name">토스</div>
                     <div class="bank-description">토스뱅크</div>
                 </div>
-                <div class="bank-status unavailable">준비중</div>
+                <div class="bank-status available">이용가능</div>
             </div>
 
-            <div class="bank-item" id="shinhan-bank" onclick="handleShinhanClick()">
+            <!-- 신한SOL -->
+            <div class="bank-item" onclick="handleShinhanClick()">
                 <div class="bank-logo logo-shinhan">SOL</div>
                 <div class="bank-info">
                     <div class="bank-name">신한SOL</div>
@@ -57,32 +41,157 @@
                 <div class="bank-status available">이용가능</div>
             </div>
 
-            <div class="bank-item disabled">
-                <div class="bank-logo logo-woori">WOORI<br>WON</div>
+            <!-- 카카오뱅크 -->
+            <div class="bank-item" onclick="showBankScreen('kakao')">
+                <div class="bank-logo logo-kakao">kakao<br>bank</div>
                 <div class="bank-info">
-                    <div class="bank-name">우리WON뱅킹</div>
-                    <div class="bank-description">우리은행</div>
+                    <div class="bank-name">카카오뱅크</div>
+                    <div class="bank-description">카카오뱅크</div>
                 </div>
-                <div class="bank-status unavailable">준비중</div>
+                <div class="bank-status available">이용가능</div>
             </div>
 
-            <div class="bank-item disabled">
+            <!-- KB국민은행 -->
+            <div class="bank-item" onclick="showBankScreen('kb')">
                 <div class="bank-logo logo-kb">KB<br>Star</div>
                 <div class="bank-info">
                     <div class="bank-name">KB스타뱅킹</div>
                     <div class="bank-description">국민은행</div>
                 </div>
-                <div class="bank-status unavailable">준비중</div>
+                <div class="bank-status available">이용가능</div>
             </div>
 
-            <div class="bank-item disabled">
+            <!-- 하나은행 -->
+            <div class="bank-item" onclick="showBankScreen('hana')">
                 <div class="bank-logo logo-hana">하나<br>원큐</div>
                 <div class="bank-info">
                     <div class="bank-name">하나원큐</div>
                     <div class="bank-description">하나은행</div>
                 </div>
-                <div class="bank-status unavailable">준비중</div>
+                <div class="bank-status available">이용가능</div>
             </div>
+
+            <!-- 우리은행 -->
+            <div class="bank-item" onclick="showBankScreen('woori')">
+                <div class="bank-logo logo-woori">WOORI<br>WON</div>
+                <div class="bank-info">
+                    <div class="bank-name">우리WON뱅킹</div>
+                    <div class="bank-description">우리은행</div>
+                </div>
+                <div class="bank-status available">이용가능</div>
+            </div>
+
+            <!-- 농협은행 -->
+            <div class="bank-item" onclick="showBankScreen('nh')">
+                <div class="bank-logo logo-nh">NH<br>Bank</div>
+                <div class="bank-info">
+                    <div class="bank-name">NH올원뱅크</div>
+                    <div class="bank-description">농협은행</div>
+                </div>
+                <div class="bank-status available">이용가능</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 토스 화면 -->
+    <div class="bank-overlay toss-overlay" id="toss-screen">
+        <button class="close-demo" onclick="closeBankScreen('toss-screen')">×</button>
+        <div class="bank-content bounce">
+            <div class="bank-logo-large">toss</div>
+            <h2>간편송금</h2>
+            <div class="transfer-info">
+                <p><strong>받는 사람:</strong> <span id="toss-sender">윤서</span>님</p>
+                <p style="font-size: 24px; font-weight: bold; margin: 10px 0;" id="toss-amount">₩0</p>
+                <p style="opacity: 0.8;">정산 요청 금액</p>
+            </div>
+            <button class="transfer-button" onclick="completeBankTransfer('토스')">
+                송금하기
+            </button>
+        </div>
+    </div>
+
+    <!-- 카카오뱅크 화면 -->
+    <div class="bank-overlay kakao-overlay" id="kakao-screen">
+        <button class="close-demo" onclick="closeBankScreen('kakao-screen')">×</button>
+        <div class="bank-content bounce">
+            <div class="bank-logo-large">kakao bank</div>
+            <h2>송금하기</h2>
+            <div class="transfer-info">
+                <p><strong>받는 사람:</strong> <span id="kakao-sender">윤서</span>님</p>
+                <p style="font-size: 24px; font-weight: bold; margin: 10px 0; color: #333;" id="kakao-amount">₩0</p>
+                <p style="opacity: 0.8;">정산 요청 금액</p>
+            </div>
+            <button class="transfer-button" onclick="completeBankTransfer('카카오뱅크')">
+                송금하기
+            </button>
+        </div>
+    </div>
+
+    <!-- KB국민은행 화면 -->
+    <div class="bank-overlay kb-overlay" id="kb-screen">
+        <button class="close-demo" onclick="closeBankScreen('kb-screen')">×</button>
+        <div class="bank-content bounce">
+            <div class="bank-logo-large">KB★</div>
+            <h2>KB스타뱅킹 송금</h2>
+            <div class="transfer-info">
+                <p><strong>받는 사람:</strong> <span id="kb-sender">윤서</span>님</p>
+                <p style="font-size: 24px; font-weight: bold; margin: 10px 0; color: #333;" id="kb-amount">₩0</p>
+                <p style="opacity: 0.8;">정산 요청 금액</p>
+            </div>
+            <button class="transfer-button" onclick="completeBankTransfer('KB국민은행')">
+                송금하기
+            </button>
+        </div>
+    </div>
+
+    <!-- 하나은행 화면 -->
+    <div class="bank-overlay hana-overlay" id="hana-screen">
+        <button class="close-demo" onclick="closeBankScreen('hana-screen')">×</button>
+        <div class="bank-content bounce">
+            <div class="bank-logo-large">하나원큐</div>
+            <h2>간편송금</h2>
+            <div class="transfer-info">
+                <p><strong>받는 사람:</strong> <span id="hana-sender">윤서</span>님</p>
+                <p style="font-size: 24px; font-weight: bold; margin: 10px 0;" id="hana-amount">₩0</p>
+                <p style="opacity: 0.8;">정산 요청 금액</p>
+            </div>
+            <button class="transfer-button" onclick="completeBankTransfer('하나은행')">
+                송금하기
+            </button>
+        </div>
+    </div>
+
+    <!-- 우리은행 화면 -->
+    <div class="bank-overlay woori-overlay" id="woori-screen">
+        <button class="close-demo" onclick="closeBankScreen('woori-screen')">×</button>
+        <div class="bank-content bounce">
+            <div class="bank-logo-large">WOORI</div>
+            <h2>WON뱅킹 송금</h2>
+            <div class="transfer-info">
+                <p><strong>받는 사람:</strong> <span id="woori-sender">윤서</span>님</p>
+                <p style="font-size: 24px; font-weight: bold; margin: 10px 0;" id="woori-amount">₩0</p>
+                <p style="opacity: 0.8;">정산 요청 금액</p>
+            </div>
+            <button class="transfer-button" onclick="completeBankTransfer('우리은행')">
+                송금하기
+            </button>
+        </div>
+    </div>
+
+    <!-- 농협은행 화면 -->
+    <div class="bank-overlay nh-overlay" id="nh-screen">
+        <button class="close-demo" onclick="closeBankScreen('nh-screen')">×</button>
+        <div class="bank-content bounce">
+            <div class="bank-logo-large">NH농협</div>
+            <h2>올원뱅크 송금</h2>
+            <div class="transfer-info">
+                <p><strong>받는 사람:</strong> <span id="nh-sender">윤서</span>님</p>
+                <p style="font-size: 24px; font-weight: bold; margin: 10px 0;" id="nh-amount">₩0</p>
+                <p style="opacity: 0.8;">정산 요청 금액</p>
+            </div>
+            <button class="transfer-button" onclick="completeBankTransfer('NH농협은행')">
+                송금하기
+            </button>
         </div>
     </div>
 
