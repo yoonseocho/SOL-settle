@@ -1,6 +1,7 @@
 import SwiftUI
 struct MainView: View {
     @StateObject private var balanceManager = BalanceManager.shared
+    @State private var showSettlement = false
     
     var body: some View {
         NavigationView {
@@ -165,7 +166,9 @@ struct MainView: View {
                             ServiceCard(icon: "paperplane.fill", title: "돈보내기", color: .orange)
                             
                             // 정산하기 버튼 (실제 동작)
-                            NavigationLink(destination: ContactSelectionView()) {
+                            Button(action: {
+                                showSettlement = true
+                            }) {
                                 VStack(spacing: 15) {
                                     Circle()
                                         .fill(Color.orange)
@@ -187,10 +190,7 @@ struct MainView: View {
                                 .cornerRadius(15)
                                 .shadow(color: .gray.opacity(0.1), radius: 5)
                             }
-                            .onTapGesture {
-                                print("🔥 정산하기 버튼 탭됨!")
-                            }
-                            
+
                             ServiceCard(icon: "building.2.fill", title: "ATM 찾기", color: .blue)
                         }
                         .padding(.horizontal, 20)
@@ -220,6 +220,11 @@ struct MainView: View {
         .onAppear {
             // 앱 시작시 잔액 계산
             balanceManager.calculateInitialBalance()
+        }
+        .fullScreenCover(isPresented: $showSettlement) {
+            NavigationView {
+                ContactSelectionView()
+            }
         }
     }
     
