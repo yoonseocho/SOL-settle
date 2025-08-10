@@ -156,13 +156,23 @@ SOL-settle/
 ## 🎬 데모 영상
 
 ### 📱 정산 요청자 시연
-> 신한SOL에서 친구들에게 정산 요청하는 과정
+> 신한SOL에서 친구들에게 정산 요청하는 과정과 정산완료 후 거래 내역 확인 과정
+<div align="center">
+ <img src="https://github.com/user-attachments/assets/661024de-72c4-4095-98be-478549052b3c" width="300">
+ <img src="https://github.com/user-attachments/assets/146229ae-9d7d-460b-b78a-9c86743ff6b4" width="300">
+</div>
 
 ### 📨 타행 사용자 시연  
 > SMS 링크를 통해 타행 앱에서 송금하는 과정
+<div align="center">
+ <img src="https://github.com/user-attachments/assets/a2d87efd-4252-45cd-95cf-10416cab94c6" width="300">
+</div>
 
 ### 🔔 SOL 사용자 시연
 > 푸시 알림을 받고 SOL에서 바로 송금하는 과정
+<div align="center">
+ <img src="https://github.com/user-attachments/assets/275cb185-bc80-4e33-a2ec-a1241803b595" width="300">
+</div>
 
 ## 🚀 설치 및 실행
 
