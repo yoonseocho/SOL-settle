@@ -4,6 +4,7 @@ struct ContactSelectionView: View {
     @Environment(\.dismiss) var dismiss
     @State private var searchText = ""
     @State private var selectedContacts: Set<String> = ["me"]
+    @State private var showSettlementView = false
     
     @StateObject private var contactService = ContactService()
     
@@ -382,7 +383,9 @@ struct ContactSelectionView: View {
                 VStack {
                     Spacer()
                     
-                    NavigationLink(destination: SettlementView(initialContacts: getSelectedContactsList(), presetAmount: presetAmount)) {
+                    Button(action: {
+                        showSettlementView = true
+                    }) {
                         Text("1/N 정산하기")
                             .font(.headline)
                             .fontWeight(.bold)
@@ -403,6 +406,12 @@ struct ContactSelectionView: View {
             )
         }
         .navigationBarHidden(true)
+        .fullScreenCover(isPresented: $showSettlementView) {
+            SettlementView(
+                initialContacts: getSelectedContactsList(),
+                presetAmount: presetAmount
+            )
+        }
         .onAppear {
             print("🎯 ContactSelectionView 나타남!")
             print("🔍 AI 추천 표시 여부: \(shouldShowAIRecommendations)")

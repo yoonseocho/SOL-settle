@@ -137,6 +137,11 @@ struct SettlementView: View {
     init(initialContacts: [Contact], presetAmount: Int? = nil) {
         self._selectedContacts = State(initialValue: initialContacts)
         self.presetAmount = presetAmount
+        
+        if let preset = presetAmount {
+            self._totalAmount = State(initialValue: String(preset))
+            self._displayAmount = State(initialValue: NumberFormatter().string(from: NSNumber(value: preset)) ?? "")
+        }
     }
     
     @State private var totalAmount = ""
