@@ -6,7 +6,7 @@ struct TransferDetailView: View {
     let recipient: String
     
     @State private var memo = ""
-    @State private var selectedSender = "김수진"
+    @State private var selectedSender = "임채희"
     @State private var selectedRecipient = "조윤서"
     @State private var navigateToComplete = false
     @Environment(\.dismiss) var dismiss
@@ -130,7 +130,7 @@ struct TransferDetailView: View {
                                 
                                 Spacer()
                                 
-                                Text("김수진")
+                                Text("임채희")
                                     .font(.subheadline)
                                     .foregroundColor(.black)
                                 
@@ -225,7 +225,7 @@ struct TransferDetailView: View {
         .fullScreenCover(isPresented: $navigateToComplete) {
             TransferCompleteView(
                 amount: amount,
-                recipient: recipient,
+                sender: sender,
                 onDismiss: {
                     navigateToComplete = false
                     NotificationCenter.default.post(name: .dismissAllTransferViews, object: nil)
@@ -247,7 +247,7 @@ struct TransferDetailView: View {
 // 송금 완료 화면 - 간단한 카테고리 토글 추가
 struct TransferCompleteView: View {
     let amount: String
-    let recipient: String
+    let sender: String
     let onDismiss: () -> Void
     
     @State private var enableCategorySelection = false
@@ -272,14 +272,6 @@ struct TransferCompleteView: View {
                 Text("송금 완료")
                     .font(.title)
                     .fontWeight(.bold)
-                
-                Text("\(formatAmountWithCommas(amount))원이")
-                    .font(.headline)
-                    .foregroundColor(.gray)
-                
-                Text("\(recipient)님께 송금되었습니다")
-                    .font(.headline)
-                    .foregroundColor(.gray)
             }
             
             Spacer()
@@ -307,14 +299,14 @@ struct TransferCompleteView: View {
                 if enableCategorySelection {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
-                            ForEach(TransactionCategory.simpleCases, id: \.self) { category in
+                            ForEach(TransactionCategory.allCases, id: \.self) { category in
                                 Button(action: {
                                     selectedCategory = category
                                 }) {
                                     HStack(spacing: 6) {
                                         Image(systemName: category.icon)
                                             .font(.caption)
-                                        Text(category.displayName)
+                                        Text(category.rawValue)
                                             .font(.caption)
                                             .fontWeight(.medium)
                                     }
@@ -322,7 +314,7 @@ struct TransferCompleteView: View {
                                     .padding(.vertical, 8)
                                     .background(
                                         RoundedRectangle(cornerRadius: 15)
-                                            .fill(selectedCategory == category ? category.color : Color.gray.opacity(0.15))
+                                            .fill(selectedCategory == category ? Color(hex: category.color) : Color.gray.opacity(0.15))
                                     )
                                     .foregroundColor(selectedCategory == category ? .white : .gray)
                                 }
@@ -365,71 +357,76 @@ struct TransferCompleteView: View {
     }
     
     private func saveTransactionCategory() {
-        let finalCategory = selectedCategory.displayName
+        let finalCategory = selectedCategory.rawValue
         
         print("💾 거래 카테고리 저장:")
         print("  금액: \(amount)원")
-        print("  받는이: \(recipient)")
+        print("  보낸이: \(sender)")
         print("  카테고리: \(finalCategory)")
         print("  시간: \(Date())")
         
+        // 실제 Transaction 객체 생성 (조윤서 입장에서는 입금)
+        let newTransaction = Transaction(
+            amount: Int(amount) ?? 0,
+            type: .income,
+            category: selectedCategory,
+            description: sender,
+            date: Date(),
+            counterparty: "타행모바일뱅킹",
+            bankName: "신한은행"
+        )
+        
+        // 거래내역을 전역적으로 접근 가능한 곳에 저장
+        saveTransactionToGlobalStorage(newTransaction)
+        
+        // 기존 UserDefaults 저장도 유지
         var transactions = UserDefaults.standard.array(forKey: "SavedTransactions") as? [[String: Any]] ?? []
         
         let transaction: [String: Any] = [
             "id": UUID().uuidString,
             "amount": amount,
-            "recipient": recipient,
+            "sender": sender,
             "category": finalCategory,
             "date": Date(),
-            "type": "transfer"
+            "type": "income"
         ]
         
         transactions.append(transaction)
         UserDefaults.standard.set(transactions, forKey: "SavedTransactions")
     }
-}
-
-enum TransactionCategory: String, CaseIterable {
-    case food = "식비"
-    case gift = "선물"
-    case transport = "교통비"
-    case travel = "여행"  // "여행/숙박" → "여행"으로 변경
-    case etc = "기타"     // 이 라인 추가
     
-    var displayName: String {
-        return self.rawValue
-    }
-    
-    var icon: String {
-        switch self {
-        case .food: return "fork.knife"
-        case .gift: return "gift"
-        case .transport: return "car"
-        case .travel: return "airplane"
-        case .etc: return "ellipsis.circle"  // 이 케이스 추가
+    private func saveTransactionToGlobalStorage(_ transaction: Transaction) {
+        // Transaction을 Data로 변환하여 UserDefaults에 저장
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        
+        var storedTransactions = getStoredTransactions()
+        storedTransactions.append(transaction)
+        
+        if let encodedData = try? encoder.encode(storedTransactions) {
+            UserDefaults.standard.set(encodedData, forKey: "ActualTransactions")
+            
+            // 새로운 거래가 추가되었음을 알림
+            NotificationCenter.default.post(name: .transactionAdded, object: transaction)
         }
     }
     
-    var color: Color {
-        switch self {
-        case .food: return .orange
-        case .gift: return .pink
-        case .transport: return .blue
-        case .travel: return .green
-        case .etc: return .gray  // 이 케이스 추가
+    private func getStoredTransactions() -> [Transaction] {
+        guard let data = UserDefaults.standard.data(forKey: "ActualTransactions") else {
+            return []
         }
-    }
-    
-    // simpleCases 수정
-    static var simpleCases: [TransactionCategory] {
-        return [.food, .gift, .transport, .travel, .etc]  // .culture 제거, .etc 추가
+        
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        
+        return (try? decoder.decode([Transaction].self, from: data)) ?? []
     }
 }
 
 #Preview {
     TransferDetailView(
         amount: "25000",
-        sender: "김수진",
+        sender: "임채희",
         recipient: "조윤서"
     )
 }

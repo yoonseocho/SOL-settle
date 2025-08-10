@@ -1,6 +1,7 @@
 import SwiftUI
-
 struct MainView: View {
+    @StateObject private var balanceManager = BalanceManager.shared
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -88,18 +89,22 @@ struct MainView: View {
                                 .font(.subheadline)
                             }
                             
-                            HStack(alignment: .bottom, spacing: 5) {
-                                Text("5,250")
-                                    .font(.largeTitle)
-                                    .fontWeight(.bold)
-                                Text("원")
-                                    .font(.title2)
-                                    .foregroundColor(.gray)
-                                
-                                Image(systemName: "arrow.clockwise")
-                                    .foregroundColor(.gray)
-                                    .font(.title3)
+                            NavigationLink(destination: LedgerView()) {
+                                HStack(alignment: .bottom, spacing: 5) {
+                                    Text(formattedBalance)
+                                        .font(.largeTitle)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.primary)
+                                    Text("원")
+                                        .font(.title2)
+                                        .foregroundColor(.gray)
+                                    
+                                    Image(systemName: "arrow.clockwise")
+                                        .foregroundColor(.gray)
+                                        .font(.title3)
+                                }
                             }
+                            .buttonStyle(PlainButtonStyle())
                             
                             HStack(spacing: 15) {
                                 Button("돈보내기") {
@@ -111,7 +116,7 @@ struct MainView: View {
                                 .cornerRadius(8)
                                 .foregroundColor(.black)
                                 
-                                Button("금여클럽+") {
+                                Button("급여클럽+") {
                                     // 하드코딩
                                 }
                                 .frame(maxWidth: .infinity)
@@ -185,7 +190,6 @@ struct MainView: View {
                             .onTapGesture {
                                 print("🔥 정산하기 버튼 탭됨!")
                             }
-
                             
                             ServiceCard(icon: "building.2.fill", title: "ATM 찾기", color: .blue)
                         }
@@ -213,9 +217,17 @@ struct MainView: View {
             .ignoresSafeArea(.all, edges: [.top, .bottom])
         }
         .navigationBarHidden(true)
+        .onAppear {
+            // LedgerView의 계산 로직이 실행되도록 초기화
+        }
+    }
+    
+    private var formattedBalance: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter.string(from: NSNumber(value: balanceManager.currentBalance)) ?? "0"
     }
 }
-
 // 서비스 카드 컴포넌트
 struct ServiceCard: View {
     let icon: String
@@ -244,7 +256,6 @@ struct ServiceCard: View {
         .shadow(color: .gray.opacity(0.1), radius: 5)
     }
 }
-
 // 탭바 아이템
 struct TabBarItem: View {
     let icon: String
@@ -264,7 +275,6 @@ struct TabBarItem: View {
         .frame(maxWidth: .infinity)
     }
 }
-
 #Preview {
     ContentView()
 }

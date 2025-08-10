@@ -45,7 +45,7 @@ struct TransferView: View {
                 // 받는 사람 정보
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("\(sender)님께")
+                        Text("조윤서님께")
                             .font(.title2)
                             .fontWeight(.bold)
                         Spacer()
@@ -89,7 +89,7 @@ struct TransferView: View {
                 VStack(spacing: 0) {
                     // 계좌 선택
                     HStack {
-                        Text("신한 110-987-654321")
+                        Text("신한 110-123-456789")
                             .font(.subheadline)
                             .foregroundColor(.gray)
                         
@@ -171,8 +171,8 @@ struct TransferView: View {
         .fullScreenCover(isPresented: $showTransferDetail) {
             TransferDetailView(
                 amount: currentAmount,
-                sender: sender,
-                recipient: "조윤서"  // 실제로는 받는 사람 정보를 전달받아야 함
+                sender: "임채희",  // 돈을 보내는 사람
+                recipient: "조윤서"  // 돈을 받는 사람 (현재 앱 사용자)
             )
         }
     }

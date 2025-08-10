@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3C0043012E47B4C4009AC0F0 /* TransactionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0043002E47B4C4009AC0F0 /* TransactionListView.swift */; };
+		3C0043032E47B4E4009AC0F0 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0043022E47B4E4009AC0F0 /* Transaction.swift */; };
+		3C0043052E47B504009AC0F0 /* TransactionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0043042E47B504009AC0F0 /* TransactionHistoryView.swift */; };
+		3C0043072E47B533009AC0F0 /* LedgerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0043062E47B533009AC0F0 /* LedgerView.swift */; };
 		3C209FBB2E3F572F00CAD2FE /* SOL_settleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C209FBA2E3F572F00CAD2FE /* SOL_settleApp.swift */; };
 		3C209FBD2E3F572F00CAD2FE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C209FBC2E3F572F00CAD2FE /* ContentView.swift */; };
 		3C209FBF2E3F573100CAD2FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3C209FBE2E3F573100CAD2FE /* Assets.xcassets */; };
@@ -22,6 +26,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3C0043002E47B4C4009AC0F0 /* TransactionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListView.swift; sourceTree = "<group>"; };
+		3C0043022E47B4E4009AC0F0 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
+		3C0043042E47B504009AC0F0 /* TransactionHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryView.swift; sourceTree = "<group>"; };
+		3C0043062E47B533009AC0F0 /* LedgerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerView.swift; sourceTree = "<group>"; };
 		3C209FB72E3F572F00CAD2FE /* SOL-settle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SOL-settle.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C209FBA2E3F572F00CAD2FE /* SOL_settleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOL_settleApp.swift; sourceTree = "<group>"; };
 		3C209FBC2E3F572F00CAD2FE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -49,6 +57,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3C0042FF2E47B4B3009AC0F0 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				3C0043002E47B4C4009AC0F0 /* TransactionListView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		3C209FAE2E3F572F00CAD2FE = {
 			isa = PBXGroup;
 			children = (
@@ -92,6 +108,7 @@
 			isa = PBXGroup;
 			children = (
 				3C209FD12E3F5EA500CAD2FE /* Contact.swift */,
+				3C0043022E47B4E4009AC0F0 /* Transaction.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -99,11 +116,14 @@
 		3C209FCB2E3F59BE00CAD2FE /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				3C0042FF2E47B4B3009AC0F0 /* Components */,
 				3C209FCD2E3F5A0A00CAD2FE /* MainView.swift */,
 				3C209FCF2E3F5E5400CAD2FE /* ContactSelectionView.swift */,
 				3C209FD52E3F854100CAD2FE /* SettlementView.swift */,
 				3C209FD92E3FB9CF00CAD2FE /* TransferView.swift */,
 				3CD483DA2E42330C003D547A /* TransferDetailView.swift */,
+				3C0043042E47B504009AC0F0 /* TransactionHistoryView.swift */,
+				3C0043062E47B533009AC0F0 /* LedgerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -188,13 +208,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				3C209FBD2E3F572F00CAD2FE /* ContentView.swift in Sources */,
+				3C0043052E47B504009AC0F0 /* TransactionHistoryView.swift in Sources */,
 				3C209FDA2E3FB9CF00CAD2FE /* TransferView.swift in Sources */,
+				3C0043032E47B4E4009AC0F0 /* Transaction.swift in Sources */,
 				3CD483DB2E42330C003D547A /* TransferDetailView.swift in Sources */,
 				3C209FCE2E3F5A0A00CAD2FE /* MainView.swift in Sources */,
 				3C209FD62E3F854100CAD2FE /* SettlementView.swift in Sources */,
 				3C209FD42E3F622100CAD2FE /* ContactService.swift in Sources */,
 				3C209FD22E3F5EA500CAD2FE /* Contact.swift in Sources */,
+				3C0043072E47B533009AC0F0 /* LedgerView.swift in Sources */,
 				3C209FD82E3F90E200CAD2FE /* MessageService.swift in Sources */,
+				3C0043012E47B4C4009AC0F0 /* TransactionListView.swift in Sources */,
 				3C209FD02E3F5E5400CAD2FE /* ContactSelectionView.swift in Sources */,
 				3C209FBB2E3F572F00CAD2FE /* SOL_settleApp.swift in Sources */,
 			);
