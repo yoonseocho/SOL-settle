@@ -127,6 +127,8 @@ class SOLUserCheckService: ObservableObject {
 
 struct SettlementView: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.presentationMode) var presentationMode
+    
     @State private var selectedContacts: [Contact]
     let presetAmount: Int?
     @StateObject private var contactService = ContactService()
@@ -465,10 +467,9 @@ struct SettlementView: View {
         // 2. 일반 사용자들에게 SMS 전송
         if !regularUsers.isEmpty {
             sendSMSToRegularUsers(phoneNumbers: regularUsers, settlementData: settlementData)
+        } else {
+            showSettlementResult(solCount: solUsers.count, smsCount: 0)
         }
-        
-        // 결과 표시
-        showSettlementResult(solCount: solUsers.count, smsCount: regularUsers.count)
     }
     
     private func sendSMSToRegularUsers(phoneNumbers: [String], settlementData: SettlementData) {
@@ -505,6 +506,18 @@ struct SettlementView: View {
         )
         
         UNUserNotificationCenter.current().add(request)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            // 모든 네비게이션 스택을 비우고 루트로 돌아가기
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first,
+               let rootViewController = window.rootViewController {
+                rootViewController.dismiss(animated: true, completion: nil)
+            }
+            
+            // 또는 간단하게 dismiss 사용
+            self.presentationMode.wrappedValue.dismiss()
+        }
     }
     
     private func requestNotificationPermission() {
@@ -548,13 +561,20 @@ struct SettlementView: View {
     }
     
     private func handleMessageResult(_ result: MessageComposeResult) {
+        let solCount = selectedContacts.filter { contact in
+            let solCheck = solUserService.checkSOLUsers(phoneNumbers: [contact.phoneNumber])
+            return solCheck[contact.phoneNumber] == true
+        }.count
+        
         switch result {
         case .cancelled:
             print("📱 메시지 발송 취소됨")
         case .sent:
             print("✅ 메시지 발송 성공!")
+            showSettlementResult(solCount: solCount, smsCount: selectedContacts.count - 1 - solCount)
         case .failed:
             print("❌ 메시지 발송 실패")
+            showSettlementResult(solCount: solCount, smsCount: 0)
         @unknown default:
             print("❓ 알 수 없는 결과")
         }
