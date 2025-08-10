@@ -1,6 +1,8 @@
 import SwiftUI
 struct TransactionListView: View {
     let transactions: [Transaction]
+    @State private var showContactSelection = false
+    @State private var selectedTransaction: Transaction?
     
     var body: some View {
         LazyVStack(spacing: 0) {
@@ -22,7 +24,13 @@ struct TransactionListView: View {
                     
                     // 해당 날짜의 거래내역들
                     ForEach(Array(dayTransactions.enumerated()), id: \.element.id) { index, transaction in
-                        TransactionRowView(transaction: transaction)
+                        TransactionRowWithButton(
+                            transaction: transaction,
+                            onSettlementTap: {
+                                selectedTransaction = transaction
+                                showContactSelection = true
+                            }
+                        )
                         
                         if index < dayTransactions.count - 1 {
                             Divider()
@@ -33,6 +41,18 @@ struct TransactionListView: View {
             }
         }
         .background(Color.white)
+        .fullScreenCover(isPresented: $showContactSelection) {
+            NavigationView {
+                if let transaction = selectedTransaction {
+                    ContactSelectionView(
+                        presetAmount: transaction.amount,
+                        presetDescription: transaction.description
+                    )
+                } else {
+                    ContactSelectionView()
+                }
+            }
+        }
     }
     
     private var groupedTransactions: [String: [Transaction]] {
@@ -54,8 +74,11 @@ struct TransactionListView: View {
         return dateString
     }
 }
-struct TransactionRowView: View {
+
+// MARK: - 정산 버튼이 있는 거래 행
+struct TransactionRowWithButton: View {
     let transaction: Transaction
+    let onSettlementTap: () -> Void
     
     var body: some View {
         VStack(spacing: 0) {
@@ -89,7 +112,7 @@ struct TransactionRowView: View {
                             .font(.system(size: 16, weight: .medium))
                             .foregroundColor(.primary)
                         
-                        // 카테고리 표시 (이체도 포함)
+                        // 카테고리 표시
                         if transaction.category != .other {
                             HStack(spacing: 4) {
                                 Circle()
@@ -107,6 +130,19 @@ struct TransactionRowView: View {
                         }
                         
                         Spacer()
+                        
+                        // 🆕 정산하기 버튼 (지출 거래에만)
+                        if transaction.type == .expense {
+                            Button(action: onSettlementTap) {
+                                Text("정산하기")
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(.blue)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Color.blue.opacity(0.1))
+                                    .cornerRadius(6)
+                            }
+                        }
                     }
                 }
             }
@@ -115,6 +151,7 @@ struct TransactionRowView: View {
         }
     }
 }
+
 struct TransactionListView_Previews: PreviewProvider {
     static var previews: some View {
         let sampleTransactions = [

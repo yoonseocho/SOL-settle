@@ -128,11 +128,13 @@ class SOLUserCheckService: ObservableObject {
 struct SettlementView: View {
     @Environment(\.dismiss) var dismiss
     @State private var selectedContacts: [Contact]
+    let presetAmount: Int?
     @StateObject private var contactService = ContactService()
     @StateObject private var solUserService = SOLUserCheckService()
     
-    init(initialContacts: [Contact]) {
+    init(initialContacts: [Contact], presetAmount: Int? = nil) {
         self._selectedContacts = State(initialValue: initialContacts)
+        self.presetAmount = presetAmount
     }
     
     @State private var totalAmount = ""
@@ -413,6 +415,13 @@ struct SettlementView: View {
         }
         .onAppear {
             requestNotificationPermission()
+            
+            // 🆕 거래내역에서 온 경우 금액 자동 설정
+            if let preset = presetAmount {
+                totalAmount = String(preset)
+                displayAmount = formatNumber(String(preset))
+                print("💰 거래내역에서 금액 자동 설정: \(preset)원")
+            }
         }
     }
     

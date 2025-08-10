@@ -312,7 +312,7 @@ struct LedgerView: View {
                 time: "20:05:12"
             ),
             Transaction(
-                amount: 100000,
+                amount: 300000,
                 type: .income,
                 category: .transfer,
                 description: "용돈",
@@ -320,6 +320,26 @@ struct LedgerView: View {
                 counterparty: "타행모바일뱅킹",
                 bankName: "신한은행",
                 time: "06:35:04"
+            ),
+            Transaction(
+                amount: 75000,  // 큰 금액으로
+                type: .expense,
+                category: .food,
+                description: "평촌쪽갈비",  // 장소명으로 변경
+                date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
+                counterparty: "신한카드",
+                bankName: "신한은행",
+                time: "19:30:00"
+            ),
+            Transaction(
+                amount: 32000,
+                type: .expense,
+                category: .food,
+                description: "맥도날드 평촌점",  // 장소명으로 변경
+                date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
+                counterparty: "신한카드",
+                bankName: "신한은행",
+                time: "20:15:00"
             )
         ]
         

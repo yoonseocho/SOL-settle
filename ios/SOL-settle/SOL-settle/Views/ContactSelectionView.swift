@@ -7,6 +7,16 @@ struct ContactSelectionView: View {
     
     @StateObject private var contactService = ContactService()
     
+    // 🆕 거래내역에서 전달받은 정보 (옵셔널로 변경)
+    let presetAmount: Int?
+    let presetDescription: String?
+    
+    // 🔧 생성자 수정 - @StateObject 문제 해결
+    init(presetAmount: Int? = nil, presetDescription: String? = nil) {
+        self.presetAmount = presetAmount
+        self.presetDescription = presetDescription
+    }
+    
     private func getSelectedContactsList() -> [Contact] {
         var contacts: [Contact] = []
         
@@ -14,9 +24,16 @@ struct ContactSelectionView: View {
             contacts.append(Contact(id: "me", name: "나", phoneNumber: "나"))
         }
         
+        // 선택된 AI 추천 연락처들 추가
+        for contact in getAIRecommendations() {
+            if selectedContacts.contains(contact.id) {
+                contacts.append(contact)
+            }
+        }
+        
         // 선택된 실제 연락처들 추가
         for contactId in selectedContacts {
-            if contactId != "me",
+            if contactId != "me" && !contactId.hasPrefix("ai_rec_"),
                let contact = contactService.contacts.first(where: { $0.id == contactId }) {
                 contacts.append(contact)
             }
@@ -49,12 +66,21 @@ struct ContactSelectionView: View {
                     Spacer()
                     
                     VStack(spacing: 2) {
-                        Text("어디로 보낼까요?")
-                            .font(.headline)
-                            .fontWeight(.bold)
-                        Text("연락처에서 선택")
-                            .font(.caption)
-                            .foregroundColor(.gray)
+                        if let presetDescription = presetDescription {
+                            Text("\(presetDescription) 정산하기")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                            Text("연락처에서 선택")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        } else {
+                            Text("어디로 보낼까요?")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                            Text("연락처에서 선택")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
                     }
                     
                     Spacer()
@@ -74,6 +100,74 @@ struct ContactSelectionView: View {
                 // 스크롤 가능한 콘텐츠
                 ScrollView {
                     VStack(spacing: 0) {
+                        // 🆕 AI 추천 섹션
+                        VStack(alignment: .leading, spacing: 15) {
+                            HStack {
+                                Image(systemName: "brain.head.profile")
+                                    .foregroundColor(.blue)
+                                Text("🤖 AI 추천")
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                                Spacer()
+                            }
+                            
+                            // AI 추천 연락처들
+                            ForEach(getAIRecommendations(), id: \.id) { contact in
+                                HStack(spacing: 15) {
+                                    Circle()
+                                        .fill(Color.blue.opacity(0.2))
+                                        .frame(width: 40, height: 40)
+                                        .overlay(
+                                            Text(String(contact.name.prefix(1)))
+                                                .font(.headline)
+                                                .fontWeight(.bold)
+                                                .foregroundColor(.blue)
+                                        )
+                                    
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        HStack {
+                                            Image(systemName: "brain.head.profile")
+                                                .font(.caption)
+                                                .foregroundColor(.blue)
+                                            Text(contact.name)
+                                                .font(.headline)
+                                                .fontWeight(.medium)
+                                        }
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    Button(action: {
+                                        toggleSelection(for: contact.id)
+                                    }) {
+                                        Circle()
+                                            .stroke(selectedContacts.contains(contact.id) ? Color.blue : Color.gray.opacity(0.5), lineWidth: 2)
+                                            .frame(width: 24, height: 24)
+                                            .overlay(
+                                                Group {
+                                                    if selectedContacts.contains(contact.id) {
+                                                        Circle()
+                                                            .fill(Color.blue)
+                                                            .frame(width: 16, height: 16)
+                                                            .overlay(
+                                                                Image(systemName: "checkmark")
+                                                                    .font(.caption)
+                                                                    .foregroundColor(.white)
+                                                            )
+                                                    }
+                                                }
+                                            )
+                                    }
+                                }
+                                .padding(.vertical, 8)
+                            }
+                        }
+                        .padding(20)
+                        .background(Color.blue.opacity(0.05))
+                        .cornerRadius(15)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 10)
+                        
                         // 선택된 연락처 상단 표시 (잘림 방지)
                         if !selectedContacts.isEmpty {
                             ScrollView(.horizontal, showsIndicators: false) {
@@ -111,8 +205,44 @@ struct ContactSelectionView: View {
                                         }
                                     }
                                     
-                                    // 선택된 연락처들
-                                    ForEach(Array(selectedContacts.filter { $0 != "me" }), id: \.self) { contactId in
+                                    // 선택된 AI 추천 연락처들
+                                    ForEach(getAIRecommendations().filter { selectedContacts.contains($0.id) }, id: \.id) { contact in
+                                        VStack(spacing: 8) {
+                                            ZStack {
+                                                Circle()
+                                                    .fill(Color.blue.opacity(0.2))
+                                                    .frame(width: 50, height: 50)
+                                                    .overlay(
+                                                        Text(String(contact.name.prefix(1)))
+                                                            .font(.headline)
+                                                            .fontWeight(.bold)
+                                                            .foregroundColor(.blue)
+                                                    )
+                                                
+                                                // X 버튼
+                                                Button(action: {
+                                                    selectedContacts.remove(contact.id)
+                                                }) {
+                                                    Circle()
+                                                        .fill(Color.gray)
+                                                        .frame(width: 20, height: 20)
+                                                        .overlay(
+                                                            Image(systemName: "xmark")
+                                                                .font(.caption2)
+                                                                .foregroundColor(.white)
+                                                        )
+                                                }
+                                                .offset(x: 18, y: -18)
+                                            }
+                                            
+                                            Text(contact.name)
+                                                .font(.caption)
+                                                .foregroundColor(.black)
+                                        }
+                                    }
+                                    
+                                    // 선택된 실제 연락처들
+                                    ForEach(Array(selectedContacts.filter { $0 != "me" && !$0.hasPrefix("ai_rec_") }), id: \.self) { contactId in
                                         if let contact = contactService.contacts.first(where: { $0.id == contactId }) {
                                             VStack(spacing: 8) {
                                                 ZStack {
@@ -233,7 +363,7 @@ struct ContactSelectionView: View {
                 VStack {
                     Spacer()
                     
-                    NavigationLink(destination: SettlementView(initialContacts: getSelectedContactsList())) {
+                    NavigationLink(destination: SettlementView(initialContacts: getSelectedContactsList(), presetAmount: presetAmount)) {
                         Text("1/N 정산하기")
                             .font(.headline)
                             .fontWeight(.bold)
@@ -257,6 +387,10 @@ struct ContactSelectionView: View {
         .onAppear {
             print("🎯 ContactSelectionView 나타남!")
             contactService.checkContactPermission()
+            // AI 추천 연락처들을 기본 선택
+            for contact in getAIRecommendations() {
+                selectedContacts.insert(contact.id)
+            }
         }
     }
     
@@ -270,6 +404,15 @@ struct ContactSelectionView: View {
         } else {
             selectedContacts.insert(contactId)
         }
+    }
+    
+    private func getAIRecommendations() -> [Contact] {
+        // AI 추천 연락처 (하드코딩)
+        return [
+            Contact(id: "ai_rec_1", name: "조세현", phoneNumber: "010-6319-6321"),
+            Contact(id: "ai_rec_2", name: "임채희", phoneNumber: "010-8652-1471"),
+            Contact(id: "ai_rec_3", name: "김민수", phoneNumber: "010-1234-5678")
+        ]
     }
 }
 

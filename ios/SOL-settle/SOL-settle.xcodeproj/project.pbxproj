@@ -11,6 +11,8 @@
 		3C0043032E47B4E4009AC0F0 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0043022E47B4E4009AC0F0 /* Transaction.swift */; };
 		3C0043052E47B504009AC0F0 /* TransactionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0043042E47B504009AC0F0 /* TransactionHistoryView.swift */; };
 		3C0043072E47B533009AC0F0 /* LedgerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0043062E47B533009AC0F0 /* LedgerView.swift */; };
+		3C0043092E486A73009AC0F0 /* recommendations.json in Resources */ = {isa = PBXBuildFile; fileRef = 3C0043082E486A73009AC0F0 /* recommendations.json */; };
+		3C00430B2E486AA4009AC0F0 /* RecommendationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C00430A2E486AA4009AC0F0 /* RecommendationEngine.swift */; };
 		3C209FBB2E3F572F00CAD2FE /* SOL_settleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C209FBA2E3F572F00CAD2FE /* SOL_settleApp.swift */; };
 		3C209FBD2E3F572F00CAD2FE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C209FBC2E3F572F00CAD2FE /* ContentView.swift */; };
 		3C209FBF2E3F573100CAD2FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3C209FBE2E3F573100CAD2FE /* Assets.xcassets */; };
@@ -30,6 +32,8 @@
 		3C0043022E47B4E4009AC0F0 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		3C0043042E47B504009AC0F0 /* TransactionHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryView.swift; sourceTree = "<group>"; };
 		3C0043062E47B533009AC0F0 /* LedgerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerView.swift; sourceTree = "<group>"; };
+		3C0043082E486A73009AC0F0 /* recommendations.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = recommendations.json; sourceTree = "<group>"; };
+		3C00430A2E486AA4009AC0F0 /* RecommendationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationEngine.swift; sourceTree = "<group>"; };
 		3C209FB72E3F572F00CAD2FE /* SOL-settle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SOL-settle.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C209FBA2E3F572F00CAD2FE /* SOL_settleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOL_settleApp.swift; sourceTree = "<group>"; };
 		3C209FBC2E3F572F00CAD2FE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -84,6 +88,7 @@
 		3C209FB92E3F572F00CAD2FE /* SOL-settle */ = {
 			isa = PBXGroup;
 			children = (
+				3C0043082E486A73009AC0F0 /* recommendations.json */,
 				3C209FDB2E3FBACA00CAD2FE /* Info.plist */,
 				3C209FCC2E3F59CA00CAD2FE /* Services */,
 				3C209FCB2E3F59BE00CAD2FE /* Views */,
@@ -109,6 +114,7 @@
 			children = (
 				3C209FD12E3F5EA500CAD2FE /* Contact.swift */,
 				3C0043022E47B4E4009AC0F0 /* Transaction.swift */,
+				3C00430A2E486AA4009AC0F0 /* RecommendationEngine.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -195,6 +201,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C0043092E486A73009AC0F0 /* recommendations.json in Resources */,
 				3C209FC22E3F573100CAD2FE /* Preview Assets.xcassets in Resources */,
 				3C209FBF2E3F573100CAD2FE /* Assets.xcassets in Resources */,
 			);
@@ -207,6 +214,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C00430B2E486AA4009AC0F0 /* RecommendationEngine.swift in Sources */,
 				3C209FBD2E3F572F00CAD2FE /* ContentView.swift in Sources */,
 				3C0043052E47B504009AC0F0 /* TransactionHistoryView.swift in Sources */,
 				3C209FDA2E3FB9CF00CAD2FE /* TransferView.swift in Sources */,
