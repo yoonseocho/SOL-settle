@@ -171,7 +171,7 @@ struct TransferView: View {
         .fullScreenCover(isPresented: $showTransferDetail) {
             TransferDetailView(
                 amount: currentAmount,
-                sender: "임채희",  // 돈을 보내는 사람
+                sender: "조세현",  // 돈을 보내는 사람
                 recipient: "조윤서"  // 돈을 받는 사람 (현재 앱 사용자)
             )
         }

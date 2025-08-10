@@ -208,6 +208,9 @@ struct LedgerView: View {
             .onReceive(NotificationCenter.default.publisher(for: .transactionAdded)) { _ in
                 loadSampleData() // 새로운 거래가 추가되면 데이터 새로고침
             }
+            .onReceive(NotificationCenter.default.publisher(for: .calculateBalance)) { _ in
+                loadSampleData() // MainView에서 요청하면 계산 실행
+            }
         }
         .navigationBarHidden(true)
     }

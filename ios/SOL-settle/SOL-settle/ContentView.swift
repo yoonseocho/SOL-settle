@@ -1,35 +1,9 @@
 import SwiftUI
-import UserNotifications
-
-class NotificationDelegate: NSObject, ObservableObject, UNUserNotificationCenterDelegate {
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        
-        let userInfo = response.notification.request.content.userInfo
-        
-        if let type = userInfo["type"] as? String, type == "sol_settlement" {
-            if let amount = userInfo["amount"] as? Int,
-               let sender = userInfo["sender"] as? String {
-                
-                NotificationCenter.default.post(
-                    name: .showTransferView,
-                    object: nil,
-                    userInfo: [
-                        "amount": String(amount),
-                        "sender": sender
-                    ]
-                )
-            }
-        }
-        
-        completionHandler()
-    }
-}
 
 struct ContentView: View {
     @State private var showTransferView = false
     @State private var transferAmount = ""
     @State private var senderName = ""
-    @StateObject private var notificationDelegate = NotificationDelegate()
     
     var body: some View {
         NavigationView {
@@ -40,12 +14,16 @@ struct ContentView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .showTransferView)) { notification in
+            print("📱 ContentView: showTransferView 알림 수신")
             if let userInfo = notification.userInfo,
                let amount = userInfo["amount"] as? String,
                let sender = userInfo["sender"] as? String {
+                print("📱 ContentView: 송금 화면 표시 - 금액: \(amount), 발송자: \(sender)")
                 self.transferAmount = amount
                 self.senderName = sender
                 self.showTransferView = true
+            } else {
+                print("❌ ContentView: userInfo 파싱 실패")
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .dismissAllTransferViews)) { _ in
@@ -53,7 +31,7 @@ struct ContentView: View {
             self.showTransferView = false
         }
         .onAppear {
-            UNUserNotificationCenter.current().delegate = notificationDelegate
+            // 앱 시작시 필요한 설정은 SOL_settleApp에서 처리
         }
     }
 }

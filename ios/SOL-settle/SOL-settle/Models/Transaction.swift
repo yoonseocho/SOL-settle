@@ -125,4 +125,13 @@ class BalanceManager: ObservableObject {
     static let shared = BalanceManager()
     
     private init() {}
+    
+    func calculateInitialBalance() {
+        // LedgerView에서 계산 로직을 트리거하도록 알림 전송
+        NotificationCenter.default.post(name: .calculateBalance, object: nil)
+    }
+}
+
+extension Notification.Name {
+    static let calculateBalance = Notification.Name("calculateBalance")
 }

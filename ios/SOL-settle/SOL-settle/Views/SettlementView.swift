@@ -42,18 +42,50 @@ class SOLUserCheckService: ObservableObject {
     }
     
     private func createLocalPushNotification(phoneNumber: String, data: SettlementData) {
+        // 알림 권한 확인 및 요청
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            print("🔔 알림 권한 상태: \(settings.authorizationStatus.rawValue)")
+            
+            if settings.authorizationStatus == .authorized {
+                DispatchQueue.main.async {
+                    self.sendNotificationContent(phoneNumber: phoneNumber, data: data)
+                }
+            } else if settings.authorizationStatus == .notDetermined {
+                // 권한이 결정되지 않은 경우 다시 요청
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+                    print("🔔 새로운 권한 요청 결과: \(granted)")
+                    if granted {
+                        DispatchQueue.main.async {
+                            self.sendNotificationContent(phoneNumber: phoneNumber, data: data)
+                        }
+                    } else {
+                        print("❌ 알림 권한이 거부되었습니다")
+                    }
+                }
+            } else {
+                print("❌ 알림 권한이 거부된 상태입니다. 설정에서 권한을 허용해주세요.")
+                // 설정으로 이동하는 알럿 표시할 수 있음
+            }
+        }
+    }
+    
+    private func sendNotificationContent(phoneNumber: String, data: SettlementData) {
         // 로컬 푸시 알림 생성 (실제로는 서버에서 해당 사용자에게 푸시)
         let content = UNMutableNotificationContent()
         content.title = "💰 SOL 정산 요청"
         content.body = "\(data.senderName)님이 \(data.amountPerPerson.formatted())원 정산을 요청했습니다"
         content.sound = .default
         
-        content.userInfo = [
+        // userInfo 직접 설정
+        let userInfoData: [String: Any] = [
             "type": "sol_settlement",
             "amount": data.amountPerPerson,
             "sender": data.senderName,
             "phoneNumber": phoneNumber
         ]
+        content.userInfo = userInfoData
+        
+        print("🔔 알림 생성 - 금액: \(data.amountPerPerson), 발송자: \(data.senderName)")
         
         // 액션 버튼 추가
         let payAction = UNNotificationAction(
@@ -80,7 +112,7 @@ class SOLUserCheckService: ObservableObject {
         let request = UNNotificationRequest(
             identifier: UUID().uuidString,
             content: content,
-            trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+            trigger: UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
         )
         
         UNUserNotificationCenter.current().add(request) { error in

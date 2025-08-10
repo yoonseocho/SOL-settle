@@ -218,7 +218,8 @@ struct MainView: View {
         }
         .navigationBarHidden(true)
         .onAppear {
-            // LedgerView의 계산 로직이 실행되도록 초기화
+            // 앱 시작시 잔액 계산
+            balanceManager.calculateInitialBalance()
         }
     }
     

@@ -6,7 +6,7 @@ struct TransferDetailView: View {
     let recipient: String
     
     @State private var memo = ""
-    @State private var selectedSender = "임채희"
+    @State private var selectedSender = ""
     @State private var selectedRecipient = "조윤서"
     @State private var navigateToComplete = false
     @Environment(\.dismiss) var dismiss
@@ -130,7 +130,7 @@ struct TransferDetailView: View {
                                 
                                 Spacer()
                                 
-                                Text("임채희")
+                                Text(sender)
                                     .font(.subheadline)
                                     .foregroundColor(.black)
                                 
@@ -222,6 +222,9 @@ struct TransferDetailView: View {
             .ignoresSafeArea(.all, edges: .bottom)
         )
         .navigationBarHidden(true)
+        .onAppear {
+            selectedSender = sender
+        }
         .fullScreenCover(isPresented: $navigateToComplete) {
             TransferCompleteView(
                 amount: amount,
