@@ -1,8 +1,11 @@
 import SwiftUI
+
 struct TransactionListView: View {
     let transactions: [Transaction]
     @State private var showContactSelection = false
     @State private var selectedTransaction: Transaction?
+    @State private var selectedAmount: Int = 0
+    @State private var selectedDescription: String = ""
     
     var body: some View {
         LazyVStack(spacing: 0) {
@@ -27,8 +30,26 @@ struct TransactionListView: View {
                         TransactionRowWithButton(
                             transaction: transaction,
                             onSettlementTap: {
-                                selectedTransaction = transaction
-                                showContactSelection = true
+                                print("🔥 정산하기 버튼 탭됨!")
+                                print("🔍 거래 정보:")
+                                print("   - amount: \(transaction.amount)")
+                                print("   - description: '\(transaction.description)'")
+                                print("   - type: \(transaction.type)")
+                                print("🎯 정산하기 탭 - 거래 설정 중...")
+                                print("   - 선택된 거래: \(transaction.description), \(transaction.amount)원")
+                                
+                                DispatchQueue.main.async {
+                                    selectedTransaction = transaction
+                                    selectedAmount = transaction.amount
+                                    selectedDescription = transaction.description
+                                    
+                                    print("   - 값 설정 완료")
+                                    print("   - selectedAmount: \(selectedAmount)")
+                                    print("   - selectedDescription: '\(selectedDescription)'")
+                                    
+                                    showContactSelection = true
+                                    print("   - showContactSelection = true")
+                                }
                             }
                         )
                         
@@ -42,15 +63,29 @@ struct TransactionListView: View {
         }
         .background(Color.white)
         .fullScreenCover(isPresented: $showContactSelection) {
-            NavigationView {
-                if let transaction = selectedTransaction {
-                    ContactSelectionView(
-                        presetAmount: transaction.amount,
-                        presetDescription: transaction.description
-                    )
-                } else {
-                    ContactSelectionView()
-                }
+            if selectedAmount > 0 && !selectedDescription.isEmpty {
+                ContactSelectionView(
+                    presetAmount: selectedAmount > 0 ? selectedAmount : nil,
+                    presetDescription: !selectedDescription.isEmpty ? selectedDescription : nil,
+                    onDismiss: {
+                        showContactSelection = false
+                    }
+                )
+            } else {
+                ContactSelectionView(
+                    onDismiss: {
+                        showContactSelection = false
+                    }
+                )
+            }
+        }
+        .onChange(of: showContactSelection) { isShowing in
+            if !isShowing {
+                // 🆕 sheet가 닫힐 때 값들을 초기화
+                print("🔄 sheet 닫힘 - 값들 초기화")
+                selectedAmount = 0
+                selectedDescription = ""
+                selectedTransaction = nil
             }
         }
     }

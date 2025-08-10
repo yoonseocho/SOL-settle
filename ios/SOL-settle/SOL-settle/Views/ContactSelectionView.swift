@@ -10,11 +10,18 @@ struct ContactSelectionView: View {
     // 🆕 거래내역에서 전달받은 정보 (옵셔널로 변경)
     let presetAmount: Int?
     let presetDescription: String?
+    let onDismiss: (() -> Void)?
+    
+    // 🆕 AI 추천 표시 여부 결정
+    private var shouldShowAIRecommendations: Bool {
+        return presetAmount != nil && presetDescription != nil && !(presetDescription?.isEmpty ?? true)
+    }
     
     // 🔧 생성자 수정 - @StateObject 문제 해결
-    init(presetAmount: Int? = nil, presetDescription: String? = nil) {
+    init(presetAmount: Int? = nil, presetDescription: String? = nil, onDismiss: (() -> Void)? = nil) {
         self.presetAmount = presetAmount
         self.presetDescription = presetDescription
+        self.onDismiss = onDismiss
     }
     
     private func getSelectedContactsList() -> [Contact] {
@@ -24,10 +31,12 @@ struct ContactSelectionView: View {
             contacts.append(Contact(id: "me", name: "나", phoneNumber: "나"))
         }
         
-        // 선택된 AI 추천 연락처들 추가
-        for contact in getAIRecommendations() {
-            if selectedContacts.contains(contact.id) {
-                contacts.append(contact)
+        // AI 추천이 표시될 때만 AI 추천 연락처들 추가
+        if shouldShowAIRecommendations {
+            for contact in getAIRecommendations() {
+                if selectedContacts.contains(contact.id) {
+                    contacts.append(contact)
+                }
             }
         }
         
@@ -56,7 +65,13 @@ struct ContactSelectionView: View {
                 // 상단 네비게이션
                 HStack {
                     Button(action: {
-                        dismiss()
+                        if let onDismiss = onDismiss {
+                            onDismiss()  // sheet에서 온 경우
+                        } else {
+                            // NavigationLink에서 온 경우 (메인 > 정산하기)
+                            // 이 경우 @Environment(\.dismiss) 사용
+                            dismiss()
+                        }
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.title2)
@@ -100,73 +115,75 @@ struct ContactSelectionView: View {
                 // 스크롤 가능한 콘텐츠
                 ScrollView {
                     VStack(spacing: 0) {
-                        // 🆕 AI 추천 섹션
-                        VStack(alignment: .leading, spacing: 15) {
-                            HStack {
-                                Image(systemName: "brain.head.profile")
-                                    .foregroundColor(.blue)
-                                Text("🤖 AI 추천")
-                                    .font(.headline)
-                                    .fontWeight(.bold)
-                                Spacer()
-                            }
-                            
-                            // AI 추천 연락처들
-                            ForEach(getAIRecommendations(), id: \.id) { contact in
-                                HStack(spacing: 15) {
-                                    Circle()
-                                        .fill(Color.blue.opacity(0.2))
-                                        .frame(width: 40, height: 40)
-                                        .overlay(
-                                            Text(String(contact.name.prefix(1)))
-                                                .font(.headline)
-                                                .fontWeight(.bold)
-                                                .foregroundColor(.blue)
-                                        )
-                                    
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        HStack {
-                                            Image(systemName: "brain.head.profile")
-                                                .font(.caption)
-                                                .foregroundColor(.blue)
-                                            Text(contact.name)
-                                                .font(.headline)
-                                                .fontWeight(.medium)
+                        // 🆕 AI 추천 섹션 (조건부 표시)
+                        if shouldShowAIRecommendations {
+                            VStack(alignment: .leading, spacing: 15) {
+                                HStack {
+                                    Image(systemName: "brain.head.profile")
+                                        .foregroundColor(.blue)
+                                    Text("🤖 AI 추천")
+                                        .font(.headline)
+                                        .fontWeight(.bold)
+                                    Spacer()
+                                }
+                                
+                                // AI 추천 연락처들
+                                ForEach(getAIRecommendations(), id: \.id) { contact in
+                                    HStack(spacing: 15) {
+                                        Circle()
+                                            .fill(Color.blue.opacity(0.2))
+                                            .frame(width: 40, height: 40)
+                                            .overlay(
+                                                Text(String(contact.name.prefix(1)))
+                                                    .font(.headline)
+                                                    .fontWeight(.bold)
+                                                    .foregroundColor(.blue)
+                                            )
+                                        
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            HStack {
+                                                Image(systemName: "brain.head.profile")
+                                                    .font(.caption)
+                                                    .foregroundColor(.blue)
+                                                Text(contact.name)
+                                                    .font(.headline)
+                                                    .fontWeight(.medium)
+                                            }
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Button(action: {
+                                            toggleSelection(for: contact.id)
+                                        }) {
+                                            Circle()
+                                                .stroke(selectedContacts.contains(contact.id) ? Color.blue : Color.gray.opacity(0.5), lineWidth: 2)
+                                                .frame(width: 24, height: 24)
+                                                .overlay(
+                                                    Group {
+                                                        if selectedContacts.contains(contact.id) {
+                                                            Circle()
+                                                                .fill(Color.blue)
+                                                                .frame(width: 16, height: 16)
+                                                                .overlay(
+                                                                    Image(systemName: "checkmark")
+                                                                        .font(.caption)
+                                                                        .foregroundColor(.white)
+                                                                )
+                                                        }
+                                                    }
+                                                )
                                         }
                                     }
-                                    
-                                    Spacer()
-                                    
-                                    Button(action: {
-                                        toggleSelection(for: contact.id)
-                                    }) {
-                                        Circle()
-                                            .stroke(selectedContacts.contains(contact.id) ? Color.blue : Color.gray.opacity(0.5), lineWidth: 2)
-                                            .frame(width: 24, height: 24)
-                                            .overlay(
-                                                Group {
-                                                    if selectedContacts.contains(contact.id) {
-                                                        Circle()
-                                                            .fill(Color.blue)
-                                                            .frame(width: 16, height: 16)
-                                                            .overlay(
-                                                                Image(systemName: "checkmark")
-                                                                    .font(.caption)
-                                                                    .foregroundColor(.white)
-                                                            )
-                                                    }
-                                                }
-                                            )
-                                    }
+                                    .padding(.vertical, 8)
                                 }
-                                .padding(.vertical, 8)
                             }
+                            .padding(20)
+                            .background(Color.blue.opacity(0.05))
+                            .cornerRadius(15)
+                            .padding(.horizontal, 20)
+                            .padding(.top, 10)
                         }
-                        .padding(20)
-                        .background(Color.blue.opacity(0.05))
-                        .cornerRadius(15)
-                        .padding(.horizontal, 20)
-                        .padding(.top, 10)
                         
                         // 선택된 연락처 상단 표시 (잘림 방지)
                         if !selectedContacts.isEmpty {
@@ -205,39 +222,41 @@ struct ContactSelectionView: View {
                                         }
                                     }
                                     
-                                    // 선택된 AI 추천 연락처들
-                                    ForEach(getAIRecommendations().filter { selectedContacts.contains($0.id) }, id: \.id) { contact in
-                                        VStack(spacing: 8) {
-                                            ZStack {
-                                                Circle()
-                                                    .fill(Color.blue.opacity(0.2))
-                                                    .frame(width: 50, height: 50)
-                                                    .overlay(
-                                                        Text(String(contact.name.prefix(1)))
-                                                            .font(.headline)
-                                                            .fontWeight(.bold)
-                                                            .foregroundColor(.blue)
-                                                    )
-                                                
-                                                // X 버튼
-                                                Button(action: {
-                                                    selectedContacts.remove(contact.id)
-                                                }) {
+                                    // 선택된 AI 추천 연락처들 (AI 추천이 표시될 때만)
+                                    if shouldShowAIRecommendations {
+                                        ForEach(getAIRecommendations().filter { selectedContacts.contains($0.id) }, id: \.id) { contact in
+                                            VStack(spacing: 8) {
+                                                ZStack {
                                                     Circle()
-                                                        .fill(Color.gray)
-                                                        .frame(width: 20, height: 20)
+                                                        .fill(Color.blue.opacity(0.2))
+                                                        .frame(width: 50, height: 50)
                                                         .overlay(
-                                                            Image(systemName: "xmark")
-                                                                .font(.caption2)
-                                                                .foregroundColor(.white)
+                                                            Text(String(contact.name.prefix(1)))
+                                                                .font(.headline)
+                                                                .fontWeight(.bold)
+                                                                .foregroundColor(.blue)
                                                         )
+                                                    
+                                                    // X 버튼
+                                                    Button(action: {
+                                                        selectedContacts.remove(contact.id)
+                                                    }) {
+                                                        Circle()
+                                                            .fill(Color.gray)
+                                                            .frame(width: 20, height: 20)
+                                                            .overlay(
+                                                                Image(systemName: "xmark")
+                                                                    .font(.caption2)
+                                                                    .foregroundColor(.white)
+                                                            )
+                                                    }
+                                                    .offset(x: 18, y: -18)
                                                 }
-                                                .offset(x: 18, y: -18)
+                                                
+                                                Text(contact.name)
+                                                    .font(.caption)
+                                                    .foregroundColor(.black)
                                             }
-                                            
-                                            Text(contact.name)
-                                                .font(.caption)
-                                                .foregroundColor(.black)
                                         }
                                     }
                                     
@@ -386,10 +405,21 @@ struct ContactSelectionView: View {
         .navigationBarHidden(true)
         .onAppear {
             print("🎯 ContactSelectionView 나타남!")
+            print("🔍 AI 추천 표시 여부: \(shouldShowAIRecommendations)")
+            print("🔍 presetAmount: \(presetAmount?.description ?? "nil")")
+            print("🔍 presetDescription: '\(presetDescription ?? "nil")'")
+            print("🔍 presetDescription.isEmpty: \(presetDescription?.isEmpty ?? true)")
+            
             contactService.checkContactPermission()
-            // AI 추천 연락처들을 기본 선택
-            for contact in getAIRecommendations() {
-                selectedContacts.insert(contact.id)
+            
+            // AI 추천이 표시될 때만 AI 추천 연락처들을 기본 선택
+            if shouldShowAIRecommendations {
+                print("✅ AI 추천 연락처들을 자동 선택합니다")
+                for contact in getAIRecommendations() {
+                    selectedContacts.insert(contact.id)
+                }
+            } else {
+                print("❌ AI 추천이 표시되지 않습니다")
             }
         }
     }
