@@ -7,6 +7,7 @@ struct ContactSelectionView: View {
     @State private var showSettlementView = false
     
     @StateObject private var contactService = ContactService()
+    @StateObject private var recommendationEngine = RecommendationEngine()
     
     // 🆕 거래내역에서 전달받은 정보 (옵셔널로 변경)
     let presetAmount: Int?
@@ -446,12 +447,44 @@ struct ContactSelectionView: View {
     }
     
     private func getAIRecommendations() -> [Contact] {
-        // AI 추천 연락처 (하드코딩)
+        // 거래내역에서 온 경우 실제 AI 추천 사용
+        if let amount = presetAmount, let description = presetDescription {
+            let hour = Calendar.current.component(.hour, from: Date())
+            
+            if let recommendation = recommendationEngine.getRecommendedParticipants(
+                place: description,
+                hour: hour,
+                amount: amount
+            ) {
+                print("🤖 AI 추천 결과: \(recommendation.recommendedParticipants)")
+                
+                return recommendation.recommendedParticipants.map { name in
+                    Contact(
+                        id: "ai_rec_\(name)",
+                        name: name,
+                        phoneNumber: getPhoneNumber(for: name)
+                    )
+                }
+            }
+        }
+        
+        // 기본 추천 (하드코딩)
         return [
             Contact(id: "ai_rec_1", name: "조세현", phoneNumber: "010-6319-6321"),
             Contact(id: "ai_rec_2", name: "임채희", phoneNumber: "010-8652-1471"),
             Contact(id: "ai_rec_3", name: "김민수", phoneNumber: "010-1234-5678")
         ]
+    }
+    
+    // 🆕 이름에 따른 전화번호 매핑
+    private func getPhoneNumber(for name: String) -> String {
+        let phoneMapping = [
+            "조세현": "010-6319-6321",
+            "임채희": "010-8652-1471",
+            "김민수": "010-1234-5678",
+            "박지현": "010-9876-5432"
+        ]
+        return phoneMapping[name] ?? "010-0000-0000"
     }
 }
 
