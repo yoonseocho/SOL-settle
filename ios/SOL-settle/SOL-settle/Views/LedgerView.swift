@@ -312,7 +312,7 @@ struct LedgerView: View {
                 time: "20:05:12"
             ),
             Transaction(
-                amount: 50000,
+                amount: 100000,
                 type: .income,
                 category: .transfer,
                 description: "용돈",
